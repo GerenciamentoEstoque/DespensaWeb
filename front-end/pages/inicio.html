@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Visão Geral · Despensa Web</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <aside class="sidebar d-flex flex-column p-3 text-white">
+            <a href="inicio.html" class="d-flex align-items-center mb-4 text-white text-decoration-none brand-text fs-4 fw-bold gap-2">
+                <i class="brand-icon">🥫</i> Despensa Web
+            </a>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item"><a href="inicio.html" class="nav-link active">🏠 Início</a></li>
+                <li class="nav-item"><a href="produtos.html" class="nav-link ">📦 Produtos</a></li>
+                <li class="nav-item"><a href="categorias.html" class="nav-link ">🏷️ Categorias</a></li>
+                <li class="nav-item"><a href="movimentacoes.html" class="nav-link ">🔄 Movimentação</a></li>
+                <li class="nav-item"><a href="configuracoes.html" class="nav-link ">⚙️ Configurações</a></li>
+            </ul>
+            <hr class="border-secondary">
+            <div class="user-info">
+                <strong>Usuário Demo</strong>
+                <div class="small text-white-50">demo@despensaweb.com</div>
+                <a href="index.html" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1 p-4 p-md-5" style="max-width: 1200px; min-width: 0;">
+            
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h1 class="mb-0">Visão geral</h1>
+                    <p class="text-muted mb-0">Como está a sua despensa hoje.</p>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="fs-2 bg-light rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1;">📦</div>
+                            <div><h3 class="mb-0">8</h3><small class="text-muted">Produtos cadastrados</small></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="fs-2 bg-light rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1;">✅</div>
+                            <div><h3 class="mb-0">5</h3><small class="text-muted">Com estoque ok</small></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="fs-2 rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1; background-color: #fdeccb;">⚠️</div>
+                            <div><h3 class="mb-0">2</h3><small class="text-muted">Acabando</small></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 h-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="fs-2 rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1; background-color: #f9d9d6;">⛔</div>
+                            <div><h3 class="mb-0">1</h3><small class="text-muted">Em falta</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card p-4 h-100">
+                        <h4 class="mb-4">Quantidade por produto</h4>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="width: 140px;" class="small fw-semibold text-truncate">Arroz agulhinha</div>
+                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-success-custom" style="width: 100%"></div></div></div>
+                            <div style="width: 40px;" class="text-end small fw-bold">42</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="width: 140px;" class="small fw-semibold text-truncate">Filé de frango</div>
+                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-success-custom" style="width: 60%"></div></div></div>
+                            <div style="width: 40px;" class="text-end small fw-bold">25</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="width: 140px;" class="small fw-semibold text-truncate">Leite integral</div>
+                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-success-custom" style="width: 42%"></div></div></div>
+                            <div style="width: 40px;" class="text-end small fw-bold">18</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="width: 140px;" class="small fw-semibold text-truncate">Feijão carioca</div>
+                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-warning-custom" style="width: 20%"></div></div></div>
+                            <div style="width: 40px;" class="text-end small fw-bold">8</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="width: 140px;" class="small fw-semibold text-truncate">Carne moída</div>
+                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-warning-custom" style="width: 15%"></div></div></div>
+                            <div style="width: 40px;" class="text-end small fw-bold">6</div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="width: 140px;" class="small fw-semibold text-truncate">Azeite extra virgem</div>
+                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-danger-custom" style="width: 0%"></div></div></div>
+                            <div style="width: 40px;" class="text-end small fw-bold">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card p-4 h-100">
+                        <h4 class="mb-4">Estoque baixo</h4>
+                        
+                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold small">Feijão carioca</div>
+                                <div class="text-muted" style="font-size: 0.8rem;">8 kg · mín. 12</div>
+                            </div>
+                            <span class="badge badge-soft-warning rounded-pill px-2">Acabando</span>
+                        </div>
+                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold small">Carne moída</div>
+                                <div class="text-muted" style="font-size: 0.8rem;">6 kg · mín. 8</div>
+                            </div>
+                            <span class="badge badge-soft-warning rounded-pill px-2">Acabando</span>
+                        </div>
+                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold small">Queijo mussarela</div>
+                                <div class="text-muted" style="font-size: 0.8rem;">3 kg · mín. 5</div>
+                            </div>
+                            <span class="badge badge-soft-warning rounded-pill px-2">Acabando</span>
+                        </div>
+                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold small">Azeite extra virgem</div>
+                                <div class="text-muted" style="font-size: 0.8rem;">0 L · mín. 4</div>
+                            </div>
+                            <span class="badge badge-soft-danger rounded-pill px-2">Em falta</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Public+Sans:wght@400;600&display=swap');
+
+:root {
+    --pine: #1d4a3a;
+    --pine-hover: #2b6650;
+    --mint: #e4f0e9;
+    --saf: #f2b134;
+    --pine-light: #5ba087;
+    --bg: #f4f6f3;
+    --font-heading: 'Bricolage Grotesque', sans-serif;
+    --font-body: 'Public Sans', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg);
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-text {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+}
+
+/* Sobrescrevendo a cor primária do Bootstrap */
+.btn-primary {
+    background-color: var(--pine);
+    border-color: var(--pine);
+}
+.btn-primary:hover {
+    background-color: var(--pine-hover);
+    border-color: var(--pine-hover);
+}
+
+.text-primary { color: var(--pine) !important; }
+.bg-primary { background-color: var(--pine) !important; }
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background-color: var(--pine);
+}
+.sidebar .nav-link {
+    color: #cfe3d8;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+.sidebar .nav-link.active {
+    background-color: white;
+    color: var(--pine);
+    font-weight: 600;
+}
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    background-color: var(--saf);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: normal;
+    font-size: 20px;
+}
+
+/* Auth Pages */
+.auth-wrapper {
+    min-height: 100vh;
+}
+
+.auth-bg { 
+    background-image: url('../img/fundo.jpg');
+    background-color: rgba(0, 0, 0, 0.7); /* O 0.6 é a intensidade da escuridão (de 0 a 1) */
+    background-blend-mode: multiply; /* Mistura a cor preta com a imagem */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white; 
+}
+
+.auth-hero {
+    /* background: linear-gradient(160deg, var(--pine), #143629); */
+    color: white;
+}
+
+/* Cards & Tables */
+.card {
+    border-radius: 12px;
+    border: 1px solid #e2e7e2;
+    box-shadow: none;
+}
+.table > :not(caption) > * > * {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+.badge-soft-success { background-color: #d9f0e2; color: #1e6e43; }
+.badge-soft-warning { background-color: #fdeccb; color: #8a5a00; }
+.badge-soft-danger { background-color: #f9d9d6; color: #9d2a23; }
+
+/* Custom Progress Bar */
+.progress { height: 12px; border-radius: 10px; background-color: var(--mint); }
+.progress-bar { border-radius: 10px; }
+.bg-success-custom { background-color: #2f8f5b; }
+.bg-warning-custom { background-color: var(--saf); }
+.bg-danger-custom { background-color: #d6453d; }

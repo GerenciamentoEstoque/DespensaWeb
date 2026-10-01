@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Produtos · Despensa Web</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <aside class="sidebar d-flex flex-column p-3 text-white">
+            <a href="inicio.html" class="d-flex align-items-center mb-4 text-white text-decoration-none brand-text fs-4 fw-bold gap-2">
+                <i class="brand-icon">🥫</i> Despensa Web
+            </a>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item"><a href="inicio.html" class="nav-link ">🏠 Início</a></li>
+                <li class="nav-item"><a href="produtos.html" class="nav-link active">📦 Produtos</a></li>
+                <li class="nav-item"><a href="categorias.html" class="nav-link ">🏷️ Categorias</a></li>
+                <li class="nav-item"><a href="movimentacoes.html" class="nav-link ">🔄 Movimentação</a></li>
+                <li class="nav-item"><a href="configuracoes.html" class="nav-link ">⚙️ Configurações</a></li>
+            </ul>
+            <hr class="border-secondary">
+            <div class="user-info">
+                <strong>Usuário Demo</strong>
+                <div class="small text-white-50">demo@despensaweb.com</div>
+                <a href="index.html" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1 p-4 p-md-5" style="max-width: 1200px; min-width: 0;">
+            
+            <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+                <div>
+                    <h1 class="mb-0">Produtos</h1>
+                    <p class="text-muted mb-0">Tudo o que está na sua despensa.</p>
+                </div>
+                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalProduto">+ Novo produto</button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="d-flex gap-2 mb-4 flex-wrap">
+                <select class="form-select w-auto">
+                    <option>Todas as categorias</option>
+                    <option>Grãos e secos</option>
+                    <option>Laticínios</option>
+                    <option>Carnes</option>
+                    <option>Limpeza</option>
+                </select>
+                <input type="text" class="form-control w-auto" placeholder="Buscar produto">
+            </div>
+
+            <!-- Tabela Estática -->
+            <div class="card overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light text-muted small">
+                            <tr>
+                                <th class="py-3">Produto</th>
+                                <th class="py-3">Categoria</th>
+                                <th class="py-3">Quantidade</th>
+                                <th class="py-3">Mínimo</th>
+                                <th class="py-3">Situação</th>
+                                <th class="py-3 text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">Arroz agulhinha</td>
+                                <td>Grãos e secos</td>
+                                <td>42 kg</td>
+                                <td>15 kg</td>
+                                <td><span class="badge badge-soft-success rounded-pill">Ok</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalProduto">Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Feijão carioca</td>
+                                <td>Grãos e secos</td>
+                                <td>8 kg</td>
+                                <td>12 kg</td>
+                                <td><span class="badge badge-soft-warning rounded-pill">Acabando</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalProduto">Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Azeite extra virgem</td>
+                                <td>Grãos e secos</td>
+                                <td>0 L</td>
+                                <td>4 L</td>
+                                <td><span class="badge badge-soft-danger rounded-pill">Em falta</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalProduto">Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Leite integral</td>
+                                <td>Laticínios</td>
+                                <td>18 L</td>
+                                <td>10 L</td>
+                                <td><span class="badge badge-soft-success rounded-pill">Ok</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalProduto">Editar</button>
+                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal Formulário Produto -->
+            <div class="modal fade" id="modalProduto" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0" style="border-radius: 16px;">
+                        <div class="modal-header border-0 pb-0">
+                            <h4 class="modal-title fw-bold">Produto</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary">Nome</label>
+                                <input type="text" class="form-control" value="Arroz agulhinha">
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-bold small text-secondary">Categoria</label>
+                                    <select class="form-select">
+                                        <option>Grãos e secos</option>
+                                        <option>Laticínios</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-bold small text-secondary">Unidade</label>
+                                    <select class="form-select">
+                                        <option>kg</option>
+                                        <option>L</option>
+                                        <option>un</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-bold small text-secondary">Qtd atual</label>
+                                    <input type="number" class="form-control" value="42">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-bold small text-secondary">Estoque mín.</label>
+                                    <input type="number" class="form-control" value="15">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar produto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Excluir -->
+            <div class="modal fade" id="modalDelete" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0" style="border-radius: 16px;">
+                        <div class="modal-header border-0 pb-0">
+                            <h4 class="modal-title fw-bold text-danger">Excluir registro</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Tem certeza que deseja excluir este item? Essa ação não pode ser desfeita.
+                        </div>
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Sim, excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
