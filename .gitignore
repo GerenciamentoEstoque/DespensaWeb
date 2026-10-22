@@ -1,0 +1,39 @@
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Bancos de dados locais
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Credenciais e arquivos de configuracao locais
+.env
+.env.*
+!.env.example
+instance/
+
+# IDEs
+.vscode/
+.idea/
+
+# Temporarios
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
