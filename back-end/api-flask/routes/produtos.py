@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from database import db
 from models import Produto, Categoria, Movimentacao, UNIDADES_MEDIDAS
 
@@ -7,6 +8,7 @@ produtos_bp = Blueprint("produtos", __name__)
 
 #LISTAR PRODUTOS
 @produtos_bp.route("/produtos/listar", methods=["GET"])
+@jwt_required()
 def listar_produtos():
     produtos = db.session.execute(
         db.select(Produto)
@@ -28,6 +30,7 @@ def listar_produtos():
 
 #BUSCA DE PRODUTO POR ID
 @produtos_bp.route("/produtos/buscar/<int:id>", methods=["GET"])
+@jwt_required()
 def buscar_produto(id):
     produto = db.session.get(Produto, id)
 
@@ -45,6 +48,7 @@ def buscar_produto(id):
 
 #BUSCA DE PRODUTO POR CATEGORIA
 @produtos_bp.route("/produtos/buscar/categoria/<int:categoria_id>", methods=["GET"])
+@jwt_required()
 def buscar_produtos_por_categoria(categoria_id):
     produtos = db.session.execute(
         db.select(Produto).where(Produto.categoria_id == categoria_id)
@@ -67,6 +71,7 @@ def buscar_produtos_por_categoria(categoria_id):
 
 #BUSCA DE PRODUTO POR NOME
 @produtos_bp.route("/produtos/buscar/nome/<string:nome>", methods=["GET"])
+@jwt_required()
 def buscar_produtos_por_nome(nome):
     produtos = db.session.execute(
         db.select(Produto).where(Produto.nome.contains(nome))
@@ -89,6 +94,7 @@ def buscar_produtos_por_nome(nome):
 
 #CADASTRAR PRODUTO
 @produtos_bp.route("/produtos/cadastrar", methods=["POST"])
+@jwt_required()
 def cadastrar_produto():
     dados = request.get_json(silent=True)
 
@@ -142,6 +148,7 @@ def cadastrar_produto():
 
 #ATUALIZAR PRODUTO
 @produtos_bp.route("/produtos/atualizar/<int:id>", methods=["PUT"])
+@jwt_required()
 def atualizar_produto(id):
     produto = db.session.get(Produto, id)
 
@@ -174,6 +181,7 @@ def atualizar_produto(id):
     # Exige uma categoria existente para manter a chave estrangeira válida.
     if type(dados.get("categoria_id")) is not int or dados["categoria_id"] <= 0:
         return jsonify({"erro": "ID da categoria inválido"}), 400
+    
     if not db.session.get(Categoria, dados["categoria_id"]):
         return jsonify({"erro": "Categoria não encontrada"}), 404
 
@@ -189,6 +197,7 @@ def atualizar_produto(id):
 
 #EXCLUIR PRODUTO
 @produtos_bp.route("/produtos/excluir/<int:id>", methods=["DELETE"])
+@jwt_required()
 def excluir_produto(id):
     produto = db.session.get(Produto, id)
 

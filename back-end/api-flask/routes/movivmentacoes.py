@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from database import db
 from models import Movimentacao, Produto, Usuario, TIPO_MOVIMENTACAO
 
@@ -9,6 +10,7 @@ movimentacao_bp = Blueprint("movimentacoes", __name__)
 
 #LISTAR MOVIMENTACOES
 @movimentacao_bp.route("/movimentacoes/listar", methods=["GET"])
+@jwt_required()
 def listar_movimentacoes():
     movimentacoes = db.session.execute(
         db.select(Movimentacao)
@@ -31,6 +33,7 @@ def listar_movimentacoes():
 
 #BUSCA DE MOVIMENTACAO POR ID
 @movimentacao_bp.route("/movimentacoes/buscar/<int:id>", methods=["GET"])
+@jwt_required()
 def buscar_movimentacao(id):
     movimentacao = db.session.get(Movimentacao, id)
 
@@ -49,6 +52,7 @@ def buscar_movimentacao(id):
 
 #BUSCA DE MOVIMENTACAO POR PRODUTO
 @movimentacao_bp.route("/movimentacoes/buscar/produto/<int:produto_id>", methods=["GET"])
+@jwt_required()
 def buscar_movimentacoes_por_produto(produto_id):
     movimentacoes = db.session.execute(
         db.select(Movimentacao).where(Movimentacao.produto_id == produto_id)
@@ -72,6 +76,7 @@ def buscar_movimentacoes_por_produto(produto_id):
 
 #BUSCA DATA INICIAL
 @movimentacao_bp.route("/movimentacoes/buscar/data-inicial/<string:data_inicial>", methods=["GET"])
+@jwt_required()
 def buscar_movimentacoes_data_inicial(data_inicial):
     # A data já veio pela URL; valida seu formato.
     try:
@@ -101,6 +106,7 @@ def buscar_movimentacoes_data_inicial(data_inicial):
 
 #BUSCA DATA FINAL
 @movimentacao_bp.route("/movimentacoes/buscar/data-final/<string:data_final>", methods=["GET"])
+@jwt_required()
 def buscar_movimentacoes_data_final(data_final):
     # A data já veio pela URL; valida seu formato.
     try:
@@ -130,6 +136,7 @@ def buscar_movimentacoes_data_final(data_final):
 
 #CADASTRAR MOVIMENTACAO
 @movimentacao_bp.route("/movimentacoes/cadastrar", methods=["POST"])
+@jwt_required()
 def cadastrar_movimentacao():
     dados = request.get_json(silent=True)
 
@@ -204,6 +211,7 @@ def cadastrar_movimentacao():
 
 #ATUALIZAR MOVIMENTACAO
 @movimentacao_bp.route("/movimentacoes/atualizar/<int:id>", methods=["PUT"])
+@jwt_required()
 def atualizar_movimentacao(id):
     movimentacao = db.session.get(Movimentacao, id)
 
@@ -256,6 +264,7 @@ def atualizar_movimentacao(id):
 
 #EXCLUIR MOVIMENTACAO
 @movimentacao_bp.route("/movimentacoes/excluir/<int:id>", methods=["DELETE"])
+@jwt_required()
 def excluir_movimentacao(id):
     movimentacao = db.session.get(Movimentacao, id)
 

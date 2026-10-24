@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from database import db
 from models import  Usuario, Movimentacao
 from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import jwt_required
 
 usuarios_bp = Blueprint("usuarios", __name__)
 
@@ -10,10 +11,11 @@ usuarios_bp = Blueprint("usuarios", __name__)
 
 #LISTAR USUARIOS
 @usuarios_bp.route("/usuarios/listar", methods=["GET"])
+@jwt_required()
 def listar_usuarios():
+    
     usuarios = db.session.execute(
-        db.select(Usuario)
-    ).scalars().all()
+        db.select(Usuario)).scalars().all()
 
     resultado = []
 
@@ -28,8 +30,13 @@ def listar_usuarios():
 
 #BUSCA DE USUARIO POR ID
 @usuarios_bp.route("/usuarios/buscar/<int:id>", methods=["GET"])
+@jwt_required()
 def buscar_usuario(id):
-    usuario = db.session.get(Usuario, id)
+    
+    # Busca somente o usuário autenticado
+    usuario = db.session.execute(
+        db.select(Usuario).filter_by(id=id)
+    ).scalar_one_or_none()
 
     if not usuario:
         return jsonify({"erro": "Usuário não encontrado"}), 404
@@ -102,6 +109,7 @@ def cadastrar_usuario():
 
 #ATUALIZAR USUARIO
 @usuarios_bp.route("/usuarios/atualizar/<int:id>", methods=["PUT"])
+@jwt_required()
 def atualizar_usuario(id):
     usuario = db.session.get(Usuario, id)
 
@@ -149,6 +157,7 @@ def atualizar_usuario(id):
 
 #EXCLUIR USUARIO
 @usuarios_bp.route("/usuarios/excluir/<int:id>", methods=["DELETE"])
+@jwt_required()
 def excluir_usuario(id):
     usuario = db.session.get(Usuario, id)
 

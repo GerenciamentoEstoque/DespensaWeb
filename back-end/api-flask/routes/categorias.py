@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from database import db
 from models import Categoria, Produto
 categoria_bp = Blueprint("categorias", __name__)
@@ -6,6 +7,7 @@ categoria_bp = Blueprint("categorias", __name__)
 
 #LISTAR CATEGORIAS
 @categoria_bp.route("/categorias/listar", methods=["GET"])
+@jwt_required()
 def listar_categorias():
     categorias = db.session.execute(
         db.select(Categoria)
@@ -23,6 +25,7 @@ def listar_categorias():
 
 #BUSCA DE CATEGORIA POR ID
 @categoria_bp.route("/categorias/buscar/<int:id>", methods=["GET"])
+@jwt_required()
 def buscar_categoria(id):
     categoria = db.session.get(Categoria, id)
 
@@ -36,6 +39,7 @@ def buscar_categoria(id):
 
 #CADASTRAR CATEGORIA
 @categoria_bp.route("/categorias/cadastrar", methods=["POST"])
+@jwt_required()
 def cadastrar_categoria():
     dados = request.get_json(silent=True)
 
@@ -63,6 +67,7 @@ def cadastrar_categoria():
 
 #ATUALIZAR CATEGORIA
 @categoria_bp.route("/categorias/atualizar/<int:id>", methods=["PUT"])
+@jwt_required()
 def atualizar_categoria(id):
     categoria = db.session.get(Categoria, id)
 
@@ -87,6 +92,7 @@ def atualizar_categoria(id):
 
 #EXCLUIR CATEGORIA
 @categoria_bp.route("/categorias/excluir/<int:id>", methods=["DELETE"])
+@jwt_required()
 def excluir_categoria(id):
     categoria = db.session.get(Categoria, id)
 

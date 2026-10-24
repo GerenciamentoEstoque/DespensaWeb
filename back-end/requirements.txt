@@ -2,3 +2,6 @@ Flask
 Flask-SQLAlchemy
 SQLAlchemy
 Werkzeug
+Flask-JWT-Extended
+python-dotenv
+itsdangerous
