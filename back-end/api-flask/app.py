@@ -31,7 +31,7 @@ db.init_app(app)
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
 
 # Define a validade do token em 30 minutos
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=120)
 
 # Define que o token será recebido pelo cabeçalho HTTP
 app.config["JWT_TOKEN_LOCATION"] = ["headers"]
@@ -54,7 +54,6 @@ def home():
 
 # CRIAÇÃO DAS TABELAS
 with app.app_context():
-    print("Banco de dados:", db.engine.url.database)
     db.create_all()
 
 # EXECUÇÃO DA API

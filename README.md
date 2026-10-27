@@ -13,8 +13,6 @@ O backend utiliza Flask, SQLAlchemy ORM e SQLite. A autenticação usa JWT, as s
 - Edição e exclusão de movimentações não estão disponíveis. A exclusão de usuários está desativada.
 - O frontend é um protótipo HTML/CSS/Bootstrap: os formulários ainda não consomem a API. Navegar para a página inicial não comprova autenticação.
 
-Consulte as pendências ao final antes de utilizar dados reais ou publicar a aplicação.
-
 ## Tecnologias e dependências
 
 | Componente | Uso |
@@ -77,7 +75,7 @@ py -m venv venv
 .\venv\Scripts\python.exe -m pip install -r .\back-end\requirements.txt
 ```
 
-Se o ambiente `venv` já existir, use apenas o segundo comando. Os exemplos usam o executável do ambiente diretamente, dispensando sua ativação no PowerShell.
+Se o ambiente `venv` já existir, use apenas o segundo comando. Esse exemplo usa o executável do ambiente diretamente, dispensando sua ativação no PowerShell. A seção de inicialização abaixo também mostra como ativar o ambiente.
 
 ### Configurar o ambiente
 
@@ -110,29 +108,70 @@ O arquivo `.env` já é ignorado pelo Git. O `.env.example` contém somente exem
 
 ### Iniciar a API
 
-Na raiz do projeto:
+Escolha uma das duas opções abaixo. Execute os comandos no PowerShell, na raiz do projeto, depois de instalar as dependências e configurar o `.env`.
+
+#### Opção 1: usar o Python do ambiente sem ativá-lo
 
 ```powershell
 .\venv\Scripts\python.exe .\back-end\api-flask\app.py
 ```
 
-A API fica disponível em `http://127.0.0.1:5000`. Para verificar:
+O comando tem duas partes:
+
+- `.\venv\Scripts\python.exe` é o interpretador Python do ambiente virtual, onde foram instaladas as dependências do projeto. O prefixo `.\` indica um caminho a partir da pasta atual.
+- `.\back-end\api-flask\app.py` é o arquivo Python executado para iniciar a API.
+
+Usar o caminho completo do interpretador permite executar a aplicação com as dependências do `venv` sem precisar ativá-lo.
+
+#### Opção 2: ativar o ambiente virtual primeiro
+
+```powershell
+.\venv\Scripts\Activate.ps1
+python -m pip install -r .\back-end\requirements.txt
+python .\back-end\api-flask\app.py
+```
+
+A instalação só precisa ser repetida quando as dependências ainda não estiverem instaladas ou quando o `requirements.txt` mudar.
+
+A ativação ajusta o `PATH` deste terminal para que o comando `python` use o interpretador do `venv`. Normalmente aparece `(venv)` no início do prompt. Para conferir o interpretador selecionado, antes de iniciar a API, execute:
+
+```powershell
+python -c "import sys; print(sys.executable)"
+```
+
+O caminho deve terminar em `venv\Scripts\python.exe`. Se a política do PowerShell bloquear o `Activate.ps1`, use a opção 1, que dispensa ativação.
+
+As duas opções iniciam a mesma API em `http://127.0.0.1:5000`. Mantenha esse terminal aberto enquanto utilizar a aplicação. Para encerrar o servidor, pressione `Ctrl+C`. Se ativou o ambiente, depois de encerrar o servidor você pode sair dele com:
+
+```powershell
+deactivate
+```
+
+A ativação vale somente para o terminal atual. Em um novo terminal, ative o ambiente novamente ou use o caminho completo de `python.exe`.
+
+#### Verificar se a API está funcionando
+
+Com o servidor em execução, abra **outro terminal PowerShell** e execute:
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:5000/
 ```
 
-Resposta esperada:
+`Invoke-RestMethod` é um comando do PowerShell para fazer requisições HTTP. Neste exemplo, envia uma requisição `GET` para a rota `/` e apresenta a resposta no terminal. Ele serve apenas para verificar o servidor; não inicia a API nem exige ativar o ambiente virtual.
+
+A API retorna este JSON, que o PowerShell converte em um objeto para exibição:
 
 ```json
 {"mensagem": "API funcionando!"}
 ```
 
+Você também pode acessar `http://127.0.0.1:5000/` pelo navegador ou fazer a requisição pelo Postman. O endereço `127.0.0.1` se refere ao próprio computador, e `5000` é a porta em que a API está atendendo. Essa URL mostra a resposta da API; as páginas da interface são abertas conforme a seção de frontend abaixo.
+
 O `app.py` inicia com `debug=True`, adequado somente ao desenvolvimento local.
 
 ### Banco de dados
 
-As tabelas são criadas automaticamente com `db.create_all()` ao carregar a aplicação. Com a configuração atual, o banco fica em `back-end/api-flask/instance/despensaWeb.db`; o caminho efetivo também é impresso no console ao iniciar.
+As tabelas são criadas automaticamente com `db.create_all()` ao carregar a aplicação. Com a configuração atual, o banco fica em `back-end/api-flask/instance/despensaWeb.db`.
 
 As entidades são `Usuario`, `Categoria`, `Produto` e `Movimentacao`. Cada produto pertence a uma categoria, e cada movimentação referencia um produto e um usuário.
 
@@ -156,7 +195,7 @@ Envie corpos JSON com `Content-Type: application/json`. Nas rotas protegidas, in
 Authorization: Bearer SEU_ACCESS_TOKEN
 ```
 
-O JWT expira após 30 minutos. O token de recuperação é outro tipo de token e não substitui o JWT no cabeçalho.
+O JWT expira após 1.200 minutos (20 horas), conforme `JWT_ACCESS_TOKEN_EXPIRES` em `back-end/api-flask/app.py`. O token de recuperação é outro tipo de token e não substitui o JWT no cabeçalho.
 
 ### Exemplo completo no PowerShell
 
@@ -285,6 +324,7 @@ Respostas comuns: `200` para sucesso, `201` para criação, `400` para dados inv
 
 - Tipos aceitos: `entrada` e `saida`.
 - Quantidade de movimentação: inteiro maior que zero.
+- A data da movimentação é preenchida automaticamente com a data local do servidor no momento da criação.
 - Saldo inicial e quantidade mínima do produto: inteiros maiores ou iguais a zero.
 - Unidades aceitas: `unidade`, `kg`, `g`, `l`, `ml`. Mesmo para peso e volume, os campos atuais aceitam somente inteiros.
 - Produto e categoria devem existir nas operações que os referenciam.
@@ -292,17 +332,6 @@ Respostas comuns: `200` para sucesso, `201` para criação, `400` para dados inv
 - O ajuste do saldo e a inclusão da movimentação são confirmados pelo mesmo `commit`.
 - Categorias com produtos e produtos com movimentações não podem ser excluídos.
 - O saldo inicial informado no cadastro de produto não gera automaticamente uma movimentação. Para registrar a origem do estoque, cadastre com zero e faça uma entrada.
-
-## Pendências conhecidas
-
-- Invalidar JWTs anteriores após alteração ou recuperação de senha; atualmente continuam válidos até expirar.
-- Implementar permissões: qualquer usuário autenticado ainda pode listar e consultar outros usuários.
-- Tornar a saída de estoque condicionada ao saldo no próprio UPDATE e incluir uma restrição no banco para impedir saldo negativo em situações concorrentes.
-- Remover o `print` de `SMTP_PASSWORD` em `routes/auth.py` antes de utilizar credenciais reais; o código atual imprime a credencial no console.
-- Integrar as telas ao backend e definir a política de acesso entre origens se o frontend for servido em outra origem. Não há configuração CORS no backend atual.
-- Implantar migrações, testes automatizados persistentes e fluxo de estorno caso seja necessário corrigir movimentações.
-- Ajustar o padrão de data de `Movimentacao` para `default=dia_atual`, em vez de `default=dia_atual()`, evitando fixar a data no carregamento do módulo.
-- Tratar conflitos de e-mail e usuário inexistente na atualização de perfil.
 
 ## Licença
 

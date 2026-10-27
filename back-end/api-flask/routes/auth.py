@@ -141,11 +141,6 @@ def enviar_email(destinatario, token):
     smtp_email = os.getenv("SMTP_EMAIL")
     smtp_password = os.getenv("SMTP_PASSWORD")
 
-    print("SMTP_HOST:", smtp_host)
-    print("SMTP_PORT:", smtp_port)
-    print("SMTP_EMAIL configurado:", str(smtp_email))
-    print("SMTP_PASSWORD configurada:", str(smtp_password))
-
     # Verifica se todas as configurações existem
     if not all([smtp_host, smtp_email, smtp_password]):
         raise ValueError("Configurações SMTP incompletas")

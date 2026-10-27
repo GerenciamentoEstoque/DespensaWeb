@@ -42,7 +42,7 @@ class Movimentacao(db.Model):
     tipo = db.Column(db.String(10), nullable=False, default='entrada')  # 'entrada' ou 'saida'
     observacao = db.Column(db.String(255), nullable=True)
     quantidade = db.Column(db.Integer, nullable=False)
-    data = db.Column(db.Date, nullable=False, default=dia_atual())
+    data = db.Column(db.Date, nullable=False, default=dia_atual)
 
     produto_id = db.Column(db.Integer, db.ForeignKey('produtos.id'), nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
