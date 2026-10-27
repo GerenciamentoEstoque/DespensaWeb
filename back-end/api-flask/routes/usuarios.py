@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash
 from database import db
 from models import  Usuario, Movimentacao
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 usuarios_bp = Blueprint("usuarios", __name__)
 
@@ -44,8 +44,7 @@ def buscar_usuario(id):
     return jsonify({
         "id": usuario.id,
         "nome": usuario.nome,
-        "email": usuario.email,
-        "senha": usuario.senha
+        "email": usuario.email
     }), 200
 
 #CADASTRAR USUARIO
@@ -108,70 +107,67 @@ def cadastrar_usuario():
     }), 201
 
 #ATUALIZAR USUARIO
-@usuarios_bp.route("/usuarios/atualizar/<int:id>", methods=["PUT"])
+@usuarios_bp.route("/usuarios/atualizar", methods=["PUT"])
 @jwt_required()
-def atualizar_usuario(id):
-    usuario = db.session.get(Usuario, id)
+def atualizar_usuario():
+    
+    # Obtém o ID do usuário autenticado
+    usuario_id = int(get_jwt_identity())
 
-    if not usuario:
-        return jsonify({"erro": "Usuário não encontrado"}), 404
-
+    # Obtém os dados enviados pelo Postman
     dados = request.get_json(silent=True)
 
     if not isinstance(dados, dict):
-        return jsonify({"erro": "Envie um JSON válido"}), 400
+        return jsonify({"erro": "JSON inválido"}), 400
 
-    # Confere os tipos antes de usar .strip(), evitando erros 500.
-    if not all(isinstance(dados.get(c), str) and dados[c].strip()
-               for c in ("nome", "email", "senha")):
-        return jsonify({"erro": "Campos obrigatórios inválidos"}), 400
+    nome = dados.get("nome")
+    email = dados.get("email")
 
-    # Confere tamanhos e formato dos dados a atualizar.
-    nome = dados["nome"].strip()
-    email = dados["email"].strip().lower()
-    senha = dados["senha"]
-    if len(nome) > 100 or len(email) > 150 or not 8 <= len(senha) <= 128:
-        return jsonify({"erro": "Nome, e-mail ou tamanho da senha inválido"}), 400
+    # Verifica se os dados foram informados
+    if not isinstance(nome, str) or not isinstance(email, str):
+        return jsonify({"erro": "Informe o nome e o email"}), 400
+
+    if not nome or not email:
+        return jsonify({"erro": "Informe o nome e o email"}), 400
+
+    if len(nome) > 100 or len(email) > 150:
+        return jsonify({"erro": "Nome ou e-mail inválido"}), 400
+
     if email.count("@") != 1 or "." not in email.split("@")[1]:
         return jsonify({"erro": "E-mail inválido"}), 400
 
-    # Impede que o e-mail de outro usuário seja reutilizado.
-    existente = db.session.execute(db.select(Usuario).where(
-        Usuario.email == email, Usuario.id != id
-    )).scalar_one_or_none()
-    if existente:
-        return jsonify({"erro": "E-mail já cadastrado"}), 409
+    # Busca o usuário utilizando ORM
+    usuario = db.session.execute(
+        db.select(Usuario).filter_by(id=usuario_id)
+    ).scalar_one_or_none()
 
-    usuario.nome = nome
-    usuario.email = email
-    usuario.senha = generate_password_hash(senha)
+    usuario.nome = nome.strip()
+    usuario.email = email.strip().lower()
 
-    # Evita erro não tratado se outra requisição registrar esse e-mail simultaneamente.
-    try:
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({"erro": "E-mail já cadastrado"}), 409
-
-    return jsonify({"mensagem": "Usuário atualizado com sucesso"}), 200
-
-#EXCLUIR USUARIO
-@usuarios_bp.route("/usuarios/excluir/<int:id>", methods=["DELETE"])
-@jwt_required()
-def excluir_usuario(id):
-    usuario = db.session.get(Usuario, id)
-
-    if not usuario:
-        return jsonify({"erro": "Usuário não encontrado"}), 404
-
-    # Evita excluir usuários que possuem histórico de movimentações.
-    if db.session.execute(db.select(Movimentacao.id).where(
-        Movimentacao.usuario_id == id
-    )).first():
-        return jsonify({"erro": "Usuário possui movimentações"}), 409
-
-    db.session.delete(usuario)
+    # Salva no banco
     db.session.commit()
 
-    return jsonify({"mensagem": "Usuário excluído com sucesso"}), 200
+    return jsonify({
+        "mensagem": "Informações atualizadas com sucesso"
+    }), 200
+
+# #EXCLUIR USUARIO
+# @usuarios_bp.route("/usuarios/excluir/<int:id>", methods=["DELETE"])
+# @jwt_required()
+# def excluir_usuario(id):
+#     usuario = db.session.get(Usuario, id)
+
+#     if not usuario:
+#         return jsonify({"erro": "Usuário não encontrado"}), 404
+
+#     # Evita excluir usuários que possuem histórico de movimentações.
+#     if db.session.execute(db.select(Movimentacao.id).where(
+#         Movimentacao.usuario_id == id
+#     )).first():
+#         return jsonify({"erro": "Usuário possui movimentações"}), 409
+
+#     db.session.delete(usuario)
+#     db.session.commit()
+
+#     return jsonify({"mensagem": "Usuário excluído com sucesso"}), 200
 # endregion

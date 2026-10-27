@@ -162,7 +162,7 @@ def atualizar_produto(id):
 
     # Exige todos os campos antes de validá-los individualmente.
     if not all(campo in dados for campo in
-               ["nome", "quantidade", "quantidade_minima", "unidade_medida", "categoria_id"]):
+               ["nome", "quantidade_minima", "unidade_medida", "categoria_id"]):
         return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
 
     # Valida nome e limite definido no modelo.
@@ -170,9 +170,8 @@ def atualizar_produto(id):
         return jsonify({"erro": "Nome inválido"}), 400
 
     # Colunas Integer aceitam somente inteiros positivos ou zero (não booleanos).
-    for campo in ("quantidade", "quantidade_minima"):
-        if type(dados.get(campo)) is not int or dados[campo] < 0:
-            return jsonify({"erro": f"{campo} deve ser inteiro não negativo"}), 400
+    if type(dados.get("quantidade_minima")) is not int or dados["quantidade_minima"] < 0:
+        return jsonify({"erro": "Quantidade mínima deve ser inteiro não negativo"}), 400
 
     # Aceita apenas as unidades previstas no sistema.
     if dados.get("unidade_medida") not in UNIDADES_MEDIDAS:
@@ -186,7 +185,6 @@ def atualizar_produto(id):
         return jsonify({"erro": "Categoria não encontrada"}), 404
 
     produto.nome = dados["nome"]
-    produto.quantidade = dados["quantidade"]
     produto.quantidade_minima = dados["quantidade_minima"]
     produto.unidade_medida = dados["unidade_medida"]
     produto.categoria_id = dados["categoria_id"]
