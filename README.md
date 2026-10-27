@@ -333,6 +333,13 @@ Respostas comuns: `200` para sucesso, `201` para criação, `400` para dados inv
 - Categorias com produtos e produtos com movimentações não podem ser excluídos.
 - O saldo inicial informado no cadastro de produto não gera automaticamente uma movimentação. Para registrar a origem do estoque, cadastre com zero e faça uma entrada.
 
+## Autores
+
+Projeto desenvolvido por:
+
+- **Kauan Gabriel** — [EoKauan](https://github.com/EoKauan)
+- **Mirela Teles** — [telesmirela](https://github.com/telesmirela)
+
 ## Licença
 
 Distribuído sob a licença MIT. Consulte [LICENSE](LICENSE).
