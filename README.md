@@ -11,6 +11,7 @@ O backend utiliza Flask, SQLAlchemy ORM e SQLite. A autenticação usa JWT, as s
 - Registro de entradas e saídas, com identificação do autor pelo JWT e consulta do histórico por produto ou data.
 - Edição de produto preserva o saldo: para alterar estoque de um produto existente, use movimentações.
 - Edição e exclusão de movimentações não estão disponíveis. A exclusão de usuários está desativada.
+- Dashboard autenticado disponível em `GET /dashboard`, com indicadores de estoque, lista de produtos baixos e dados para o gráfico; o frontend ainda não consome esses dados.
 - O frontend é um protótipo HTML/CSS/Bootstrap: os formulários ainda não consomem a API. Navegar para a página inicial não comprova autenticação.
 
 ## Tecnologias e dependências
@@ -48,6 +49,7 @@ DespensaWeb/
 │           ├── categorias.py
 │           ├── produtos.py
 │           └── movivmentacoes.py
+│           ├── dashboard.py  # resumo de estoque e dados para o gráfico
 └── front-end/
     ├── assets/
     │   ├── css/style.css
@@ -195,7 +197,7 @@ Envie corpos JSON com `Content-Type: application/json`. Nas rotas protegidas, in
 Authorization: Bearer SEU_ACCESS_TOKEN
 ```
 
-O JWT expira após 1.200 minutos (20 horas), conforme `JWT_ACCESS_TOKEN_EXPIRES` em `back-end/api-flask/app.py`. O token de recuperação é outro tipo de token e não substitui o JWT no cabeçalho.
+O JWT expira após 120 minutos (2 horas), conforme `JWT_ACCESS_TOKEN_EXPIRES` em `back-end/api-flask/app.py`. O token de recuperação é outro tipo de token e não substitui o JWT no cabeçalho.
 
 ### Exemplo completo no PowerShell
 
@@ -263,6 +265,7 @@ Todas as rotas abaixo exigem JWT, exceto as marcadas como públicas.
 | Método | Rota | Finalidade | Acesso |
 | --- | --- | --- | --- |
 | GET | `/` | Verificar funcionamento | Público |
+| GET | `/dashboard` | Indicadores, produtos baixos/em falta e dados do gráfico | JWT |
 | POST | `/usuarios/cadastrar` | Criar usuário | Público |
 | POST | `/auth/login` | Obter JWT | Público |
 | POST | `/auth/esqueci-senha` | Solicitar recuperação | Público |
@@ -319,6 +322,35 @@ As rotas PUT de perfil, produto e categoria exigem todos os campos listados para
 O token de recuperação expira em 15 minutos e fica inválido após uma alteração bem-sucedida da senha. A nova senha deve ter pelo menos 8 caracteres e ser diferente da atual. A alteração autenticada também exige a senha atual e a confirmação da nova senha.
 
 Respostas comuns: `200` para sucesso, `201` para criação, `400` para dados inválidos ou estoque insuficiente, `401` para credenciais inválidas/JWT ausente ou expirado, `404` para recurso ou resultado de busca ausente, `409` para conflitos e `503` para falha no envio de e-mail. Alguns erros de JWT são retornados como `422` pela extensão.
+
+## Dashboard (tela inicial)
+
+A API já possui `GET /dashboard` no Blueprint `routes/dashboard.py`, registrado em `app.py`. A rota exige `Authorization: Bearer SEU_ACCESS_TOKEN`. A implementação lê os produtos cadastrados e devolve um JSON com três partes:
+
+- `indicadores`: `total_produtos`, `estoque_ok`, `acabando`, `em_falta`.
+- `produtos_baixos`: produtos classificados como `acabando` ou `em_falta`, com ID, nome, quantidade, mínimo, unidade e status; itens em falta vêm primeiro.
+- `grafico`: todos os produtos com nome, quantidade atual, quantidade mínima, unidade de medida e status. **A API prepara os dados; ela não desenha o gráfico.**
+
+Regras de classificação usadas no backend:
+
+| Condição | Status |
+| --- | --- |
+| `quantidade == 0` | `em_falta` |
+| `0 < quantidade <= quantidade_minima` | `acabando` |
+| `quantidade > quantidade_minima` | `ok` |
+
+Exemplo de teste no Postman: `GET http://127.0.0.1:5000/dashboard` com Bearer Token obtido em `/auth/login`. O resultado depende dos produtos efetivamente cadastrados no SQLite; não são números fixos.
+
+**Situação do frontend:** `front-end/pages/inicio.html` ainda exibe indicadores, barras e lista de estoque com exemplos estáticos. Ainda falta consumir `/dashboard` por JavaScript, preencher os elementos da página com o JSON retornado e configurar a autenticação para acesso pelo navegador. A página `redefinir-senha.html` também existe como arquivo HTML, mas não executa a recuperação pela API.
+
+## Pendências identificadas no código atual
+
+1. **Integrar o frontend à API:** telas de cadastro, login, produtos, categorias, movimentações, configurações e recuperação de senha ainda não estão conectadas aos endpoints. A interface precisará de tratamento de autenticação, sessão e falhas HTTP.
+2. **Tornar o dashboard dinâmico:** substituir os números, alertas e barras fixos de `inicio.html` pelos campos retornados por `/dashboard`; atualizar os dados após operações de estoque.
+3. **Fortalecer consistência de estoque:** a saída verifica o saldo antes de atualizar, mas faltam testes de concorrência para requisições simultâneas e proteção contra saldos inconsistentes.
+4. **Planejar quantidades fracionárias:** `quantidade` e `quantidade_minima` estão em `Integer`, mesmo para kg e litros. Se o restaurante precisar de frações, avaliar `Numeric`/`Decimal` e migração do banco.
+5. **Segurança:** adicionar rate limiting para login/recuperação; estratégia para revogar JWTs após troca/reset de senha; política de permissões e desligar `debug=True` em produção. O JWT atual é válido por **120 minutos**, não pelos 1.200 minutos informados no `.env.example` (esse arquivo não foi alterado).
+6. **Testes finais:** verificar endpoints, recuperações, erros, permissões, classificações do dashboard e operações de estoque usando cenários válidos e inválidos.
 
 ## Regras de estoque implementadas
 
