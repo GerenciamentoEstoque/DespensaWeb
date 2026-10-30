@@ -12,6 +12,7 @@ from routes.usuarios import usuarios_bp
 from routes.produtos import produtos_bp
 from routes.categorias import categoria_bp
 from routes.movivmentacoes import movimentacao_bp
+from routes.dashboard import dashboard_bp
 
 
 # Carrega as variáveis de ambiente do arquivo .env
@@ -45,6 +46,7 @@ app.register_blueprint(usuarios_bp)
 app.register_blueprint(produtos_bp)
 app.register_blueprint(categoria_bp)
 app.register_blueprint(movimentacao_bp)
+app.register_blueprint(dashboard_bp)
 
 # ROTA PRINCIPAL
 @app.route("/")
