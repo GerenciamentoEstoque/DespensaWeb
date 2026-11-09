@@ -28,25 +28,6 @@ def listar_usuarios():
 
     return jsonify(resultado), 200
 
-#BUSCA DE USUARIO POR ID
-@usuarios_bp.route("/usuarios/buscar/<int:id>", methods=["GET"])
-@jwt_required()
-def buscar_usuario(id):
-    
-    # Busca somente o usuário autenticado
-    usuario = db.session.execute(
-        db.select(Usuario).filter_by(id=id)
-    ).scalar_one_or_none()
-
-    if not usuario:
-        return jsonify({"erro": "Usuário não encontrado"}), 404
-
-    return jsonify({
-        "id": usuario.id,
-        "nome": usuario.nome,
-        "email": usuario.email
-    }), 200
-
 #CADASTRAR USUARIO
 @usuarios_bp.route("/usuarios/cadastrar", methods=["POST"])
 def cadastrar_usuario():
@@ -151,23 +132,4 @@ def atualizar_usuario():
         "mensagem": "Informações atualizadas com sucesso"
     }), 200
 
-# #EXCLUIR USUARIO
-# @usuarios_bp.route("/usuarios/excluir/<int:id>", methods=["DELETE"])
-# @jwt_required()
-# def excluir_usuario(id):
-#     usuario = db.session.get(Usuario, id)
-
-#     if not usuario:
-#         return jsonify({"erro": "Usuário não encontrado"}), 404
-
-#     # Evita excluir usuários que possuem histórico de movimentações.
-#     if db.session.execute(db.select(Movimentacao.id).where(
-#         Movimentacao.usuario_id == id
-#     )).first():
-#         return jsonify({"erro": "Usuário possui movimentações"}), 409
-
-#     db.session.delete(usuario)
-#     db.session.commit()
-
-#     return jsonify({"mensagem": "Usuário excluído com sucesso"}), 200
-# endregion
+#endregion

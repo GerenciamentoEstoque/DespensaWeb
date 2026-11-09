@@ -31,25 +31,6 @@ def listar_movimentacoes():
 
     return jsonify(resultado), 200
 
-#BUSCA DE MOVIMENTACAO POR ID
-@movimentacao_bp.route("/movimentacoes/buscar/<int:id>", methods=["GET"])
-@jwt_required()
-def buscar_movimentacao(id):
-    movimentacao = db.session.get(Movimentacao, id)
-
-    if not movimentacao:
-        return jsonify({"erro": "Movimentação não encontrada"}), 404
-
-    return jsonify({
-        "id": movimentacao.id,
-        "tipo": movimentacao.tipo,
-        "observacao": movimentacao.observacao,
-        "quantidade": movimentacao.quantidade,
-        "data": movimentacao.data.isoformat(),
-        "produto_id": movimentacao.produto_id,
-        "usuario_id": movimentacao.usuario_id
-    }), 200
-
 #BUSCA DE MOVIMENTACAO POR PRODUTO
 @movimentacao_bp.route("/movimentacoes/buscar/produto/<int:produto_id>", methods=["GET"])
 @jwt_required()

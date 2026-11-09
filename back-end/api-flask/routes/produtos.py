@@ -28,24 +28,6 @@ def listar_produtos():
 
     return jsonify(resultado), 200
 
-#BUSCA DE PRODUTO POR ID
-@produtos_bp.route("/produtos/buscar/<int:id>", methods=["GET"])
-@jwt_required()
-def buscar_produto(id):
-    produto = db.session.get(Produto, id)
-
-    if not produto:
-        return jsonify({"erro": "Produto não encontrado"}), 404
-
-    return jsonify({
-        "id": produto.id,
-        "nome": produto.nome,
-        "quantidade": produto.quantidade,
-        "quantidade_minima": produto.quantidade_minima,
-        "unidade_medida": produto.unidade_medida,
-        "categoria_id": produto.categoria_id
-    }), 200
-
 #BUSCA DE PRODUTO POR CATEGORIA
 @produtos_bp.route("/produtos/buscar/categoria/<int:categoria_id>", methods=["GET"])
 @jwt_required()

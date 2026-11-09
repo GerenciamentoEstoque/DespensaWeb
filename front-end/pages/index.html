@@ -26,26 +26,34 @@
         <div class="col-lg-6 d-flex align-items-center justify-content-center p-4">
             <div style="width: 100%; max-width: 400px;">
                 
-            <h2 class="mb-1">Entrar</h2>
-            <p class="text-muted mb-4">Acesse com seu e-mail e senha.</p>
-            <form action="inicio.html">
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">E-mail</label>
-                    <input type="email" class="form-control" required value="demo@despensaweb.com">
-                </div>
-                <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Senha</label>
-                    <input type="password" class="form-control" required value="123">
-                </div>
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar</button>
-                <div class="d-flex justify-content-between mt-3 small">
-                    <a href="esqueci-senha.html" class="text-decoration-none text-primary">Esqueci minha senha</a>
-                    <a href="cadastro.html" class="text-decoration-none text-primary">Criar conta</a>
-                </div>
-            </form>
+                <h2 class="mb-1">Entrar</h2>
+                <p class="text-muted mb-4">Acesse com seu e-mail e senha.</p>
+                <form id="form-login">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input id="email" type="email" class="form-control" autocomplete="username" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="senha" class="form-label">Senha</label>
+                        <input id="senha" type="password" class="form-control" autocomplete="current-password" required>
+                    </div>
+
+                    <p id="erro-login" class="text-danger" role="alert"></p>
+
+                    <button id="botao-login" type="submit" class="btn btn-primary w-100">
+                        Entrar
+                    </button>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="esqueci-senha.html">Esqueci minha senha</a>
+                        <a href="cadastro.html">Criar conta</a>
+                    </div>
+                </form>
         
             </div>
         </div>
     </div>
+    <script src="../assets/js/login.js"></script>
 </body>
 </html>

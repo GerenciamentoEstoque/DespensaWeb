@@ -14,12 +14,21 @@ from routes.categorias import categoria_bp
 from routes.movivmentacoes import movimentacao_bp
 from routes.dashboard import dashboard_bp
 
+from flask_cors import CORS
+
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 # Inicializa a aplicação Flask
 app = Flask(__name__)
+
+CORS(
+    app,
+    origins=["http://127.0.0.1:5500"],
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 # CONFIGURAÇÃO DO BANCO DE DADOS
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///despensaWeb.db"

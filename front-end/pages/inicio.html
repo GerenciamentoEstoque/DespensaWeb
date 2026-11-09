@@ -78,38 +78,39 @@
 
             <div class="row g-4">
                 <div class="col-lg-8">
-                    <div class="card p-4 h-100">
-                        <h4 class="mb-4">Quantidade por produto</h4>
-                        
-                        <div class="d-flex align-items-center mb-3">
-                            <div style="width: 140px;" class="small fw-semibold text-truncate">Arroz agulhinha</div>
-                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-success-custom" style="width: 100%"></div></div></div>
-                            <div style="width: 40px;" class="text-end small fw-bold">42</div>
+                    <div class="card stock-chart-card h-100" aria-labelledby="titulo-grafico">
+                        <div class="stock-chart-header">
+                            <div>
+                                <span class="stock-chart-eyebrow">CONTROLE DE ESTOQUE</span>
+                                <h4 id="titulo-grafico">Estoque por produto</h4>
+                                <p>Compare o saldo atual com o mínimo ideal.</p>
+                            </div>
+                            <div class="stock-chart-filter">
+                                <label for="unidade-grafico">Unidade</label>
+                                <select id="unidade-grafico" class="form-select" disabled></select>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div style="width: 140px;" class="small fw-semibold text-truncate">Filé de frango</div>
-                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-success-custom" style="width: 60%"></div></div></div>
-                            <div style="width: 40px;" class="text-end small fw-bold">25</div>
+                        <div class="stock-chart-meta">
+                            <span id="resumo-grafico" class="stock-chart-count">Aguardando dados</span>
+                            <button id="atualizar-grafico" type="button" class="stock-chart-refresh">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M20 7v5h-5M4 17v-5h5" />
+                                    <path d="M6.1 7a7 7 0 0 1 11.5-1L20 9M4 15l2.4 3A7 7 0 0 0 17.9 17" />
+                                </svg>
+                                Atualizar
+                            </button>
                         </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div style="width: 140px;" class="small fw-semibold text-truncate">Leite integral</div>
-                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-success-custom" style="width: 42%"></div></div></div>
-                            <div style="width: 40px;" class="text-end small fw-bold">18</div>
+                        <p id="mensagem-grafico" class="stock-chart-message" role="status" aria-live="polite"></p>
+                        <div class="stock-chart-scroll">
+                            <div id="container-grafico" class="stock-chart-canvas" hidden>
+                                <canvas id="grafico-estoque" role="img" aria-label="Quantidade atual e mínima por produto"></canvas>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div style="width: 140px;" class="small fw-semibold text-truncate">Feijão carioca</div>
-                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-warning-custom" style="width: 20%"></div></div></div>
-                            <div style="width: 40px;" class="text-end small fw-bold">8</div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div style="width: 140px;" class="small fw-semibold text-truncate">Carne moída</div>
-                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-warning-custom" style="width: 15%"></div></div></div>
-                            <div style="width: 40px;" class="text-end small fw-bold">6</div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div style="width: 140px;" class="small fw-semibold text-truncate">Azeite extra virgem</div>
-                            <div class="flex-grow-1 mx-3"><div class="progress"><div class="progress-bar bg-danger-custom" style="width: 0%"></div></div></div>
-                            <div style="width: 40px;" class="text-end small fw-bold">0</div>
+                        <div class="stock-chart-legend" aria-label="Legenda do gráfico">
+                            <span><i class="stock-chart-dot stock-chart-dot-ok" aria-hidden="true"></i>Estoque normal</span>
+                            <span><i class="stock-chart-dot stock-chart-dot-low" aria-hidden="true"></i>Acabando</span>
+                            <span><i class="stock-chart-dot stock-chart-dot-empty" aria-hidden="true"></i>Em falta</span>
+                            <span><i class="stock-chart-minimum" aria-hidden="true"></i>Mínimo ideal</span>
                         </div>
                     </div>
                 </div>
@@ -155,5 +156,7 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
 </body>
 </html>

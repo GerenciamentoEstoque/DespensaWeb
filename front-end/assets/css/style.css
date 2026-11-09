@@ -111,3 +111,95 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-text {
 .bg-success-custom { background-color: #2f8f5b; }
 .bg-warning-custom { background-color: var(--saf); }
 .bg-danger-custom { background-color: #d6453d; }
+
+/* Gráfico de estoque */
+.stock-chart-card {
+    padding: 26px;
+    overflow: hidden;
+    background: #fff;
+    border-color: #dfe8df;
+    box-shadow: 0 5px 22px rgba(29, 74, 58, 0.035);
+}
+.stock-chart-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.stock-chart-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    color: #6d8a76;
+}
+.stock-chart-header h4 { margin: 0 0 7px; color: var(--pine); font-size: 23px; }
+.stock-chart-header p { margin: 0; color: #7b887f; font-size: 12px; line-height: 1.6; }
+.stock-chart-filter { flex: 0 0 105px; }
+.stock-chart-filter label { display: block; margin-bottom: 6px; font-size: 11px; color: #758478; }
+.stock-chart-filter select {
+    border-radius: 9px;
+    border-color: #e1e9e1;
+    background-color: #f7faf6;
+    color: var(--pine);
+    font-size: 12px;
+    font-weight: 600;
+    min-height: 38px;
+}
+.stock-chart-filter select:focus { border-color: #5ba087; box-shadow: 0 0 0 3px rgba(91, 160, 135, 0.15); }
+.stock-chart-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 22px 0 12px;
+    padding-top: 16px;
+    border-top: 1px solid #edf1ec;
+}
+.stock-chart-count { padding: 4px 10px; border-radius: 6px; background: #edf4ed; color: #58715e; font-size: 11px; font-weight: 600; }
+.stock-chart-refresh {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    border: 0;
+    border-radius: 6px;
+    padding: 6px 8px;
+    background: transparent;
+    color: #627f6b;
+    font-size: 11px;
+    font-weight: 600;
+}
+.stock-chart-refresh:hover { background: #edf4ed; color: var(--pine); }
+.stock-chart-refresh:focus-visible { outline: 2px solid var(--pine-light); outline-offset: 2px; }
+.stock-chart-refresh:disabled { opacity: 0.5; cursor: wait; }
+.stock-chart-scroll { max-height: 420px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #cfddd1 transparent; }
+.stock-chart-canvas { position: relative; height: 300px; }
+.stock-chart-message {
+    margin: 18px 0;
+    padding: 24px 16px;
+    border: 1px dashed #dce7dd;
+    border-radius: 10px;
+    background: #f8fbf7;
+    color: #718076;
+    text-align: center;
+    font-size: 13px;
+}
+.stock-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid #edf1ec;
+    color: #7a887e;
+    font-size: 10px;
+}
+.stock-chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.stock-chart-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
+.stock-chart-dot-ok { background: #36755b; }
+.stock-chart-dot-low { background: #dfa43d; }
+.stock-chart-dot-empty { background: #cb6a60; }
+.stock-chart-minimum { display: inline-block; width: 13px; height: 4px; border-radius: 2px; background: #d9e2dc; }
+@media (max-width: 575.98px) {
+    .stock-chart-card { padding: 18px; }
+    .stock-chart-header { align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+    .stock-chart-header h4 { font-size: 21px; }
+    .stock-chart-filter { flex-basis: 100%; }
+    .stock-chart-filter select { max-width: 160px; }
+    .stock-chart-legend { gap: 10px 12px; }
+}

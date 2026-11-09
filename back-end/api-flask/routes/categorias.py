@@ -23,20 +23,6 @@ def listar_categorias():
 
     return jsonify(resultado), 200
 
-#BUSCA DE CATEGORIA POR ID
-@categoria_bp.route("/categorias/buscar/<int:id>", methods=["GET"])
-@jwt_required()
-def buscar_categoria(id):
-    categoria = db.session.get(Categoria, id)
-
-    if not categoria:
-        return jsonify({"erro": "Categoria não encontrada"}), 404
-
-    return jsonify({
-        "id": categoria.id,
-        "nome": categoria.nome
-    }), 200
-
 #CADASTRAR CATEGORIA
 @categoria_bp.route("/categorias/cadastrar", methods=["POST"])
 @jwt_required()
