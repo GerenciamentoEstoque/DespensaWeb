@@ -369,8 +369,8 @@ Exemplo de teste no Postman: `GET http://127.0.0.1:5000/dashboard` com Bearer To
 
 Projeto desenvolvido por:
 
-- **Kauan Gabriel** — [EoKauan](https://github.com/EoKauan)
-- **Mirela Teles** — [telesmirela](https://github.com/telesmirela)
+- **Kauan Gabriel Francisco** — [EoKauan](https://github.com/EoKauan)
+- **Mirela Sâmela de Sousa Teles** — [telesmirela](https://github.com/telesmirela)
 
 ## Licença
 
