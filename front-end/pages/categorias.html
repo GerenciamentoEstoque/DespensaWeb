@@ -26,7 +26,7 @@
             <div class="user-info">
                 <strong>Usuário Demo</strong>
                 <div class="small text-white-50">demo@despensaweb.com</div>
-                <a href="index.html" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
+                <a href="index.html" id="botao-sair" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
             </div>
         </aside>
 
@@ -38,70 +38,31 @@
                     <h1 class="mb-0">Categorias</h1>
                     <p class="text-muted mb-0">Organize os produtos por grupo.</p>
                 </div>
-                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalCategoria">+ Nova categoria</button>
+                <button id="botao-nova" class="btn btn-primary fw-bold">+ Nova categoria</button>
             </div>
 
-            <!-- Grade Estática de Categorias -->
-            <div class="row g-4">
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card p-4 h-100 d-flex flex-column">
-                        <h4 class="mb-1">Grãos e secos</h4>
-                        <div class="text-muted small mb-3">3 produtos</div>
-                        <div class="mt-auto d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalCategoria">Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card p-4 h-100 d-flex flex-column">
-                        <h4 class="mb-1">Laticínios</h4>
-                        <div class="text-muted small mb-3">2 produtos</div>
-                        <div class="mt-auto d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalCategoria">Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card p-4 h-100 d-flex flex-column">
-                        <h4 class="mb-1">Carnes</h4>
-                        <div class="text-muted small mb-3">2 produtos</div>
-                        <div class="mt-auto d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalCategoria">Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card p-4 h-100 d-flex flex-column">
-                        <h4 class="mb-1">Limpeza</h4>
-                        <div class="text-muted small mb-3">1 produto</div>
-                        <div class="mt-auto d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalCategoria">Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Excluir</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Lista deCategorias -->
+            <p id="mensagem-lista" class="text-muted"></p>
+            <div class="row g-4" id="lista-categorias"></div>
 
             <!-- Modal Formulário Categoria -->
             <div class="modal fade" id="modalCategoria" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content border-0" style="border-radius: 16px;">
                         <div class="modal-header border-0 pb-0">
-                            <h4 class="modal-title fw-bold">Categoria</h4>
+                            <h4 class="modal-title fw-bold" id="titulo-modal-categoria">Categoria</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div>
-                                <label class="form-label fw-bold small text-secondary">Nome</label>
-                                <input type="text" class="form-control" value="Grãos e secos">
+                                <label for="categoria-nome" class="form-label fw-bold small text-secondary">Nome</label>
+                                <input type="text" id="categoria-nome" class="form-control" maxlength="100">
                             </div>
+                            <p id="erro-categoria" class="text-danger small mt-2 mb-0" role="alert"></p>
                         </div>
                         <div class="modal-footer border-0 pt-0">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar categoria</button>
+                            <button type="button" id="botao-salvar-categoria" class="btn btn-primary">Salvar categoria</button>
                         </div>
                     </div>
                 </div>
@@ -116,11 +77,12 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Tem certeza que deseja excluir esta categoria?
+                            Tem certeza que deseja excluir a categoria <strong id="nome-categoria-excluir"></strong>?
+                            <p id="erro-exclusao" class="text-danger small mt-2 mb-0" role="alert"></p>
                         </div>
                         <div class="modal-footer border-0 pt-0">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Sim, excluir</button>
+                            <button type="button" id="botao-confirmar-exclusao" class="btn btn-danger">Sim, excluir</button>
                         </div>
                     </div>
                 </div>
@@ -131,5 +93,7 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/categorias.js"></script>
 </body>
 </html>
