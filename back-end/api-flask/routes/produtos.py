@@ -90,6 +90,15 @@ def cadastrar_produto():
     # Valida nome e limite definido no modelo.
     if not isinstance(dados.get("nome"), str) or not dados["nome"].strip() or len(dados["nome"].strip()) > 100:
         return jsonify({"erro": "Nome inválido"}), 400
+    
+    produto_existente = Produto.query.filter(
+    db.func.lower(Produto.nome) == dados["nome"].lower()
+    ).first()
+
+    if produto_existente:
+        return jsonify({
+            "erro": "Já existe um produto cadastrado com esse nome."
+        }), 409
 
     # Colunas Integer aceitam somente inteiros positivos ou zero (não booleanos).
     if type(dados["quantidade_minima"]) is not int or dados["quantidade_minima"] < 0:

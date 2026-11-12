@@ -38,6 +38,15 @@ def cadastrar_categoria():
     nome = dados["nome"].strip()
     if len(nome) > 100:
         return jsonify({"erro": "Nome muito longo"}), 400
+    
+    categoria_existente = Categoria.query.filter(
+    db.func.lower(Categoria.nome) == dados["nome"].lower()
+    ).first()
+
+    if categoria_existente:
+        return jsonify({
+            "erro": "Já existe um categoria cadastrada com esse nome."
+        }), 409
 
     nova_categoria = Categoria(
         nome=nome
