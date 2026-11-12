@@ -133,8 +133,11 @@ def cadastrar_movimentacao():
         return jsonify({"erro": "Tipo de movimentação inválido"}), 400
 
     # Movimentações precisam ter quantidade inteira e maior que zero.
-    if type(dados.get("quantidade")) is not int or dados["quantidade"] <= 0:
+    if  dados["quantidade"] <= 0:
         return jsonify({"erro": "Quantidade inválida"}), 400
+
+    if  dados["quantidade"] not in int and dados["unidade_medida"] == "unidade":
+        return jsonify({"erro": "Não é possível utilizar número decimal sendo unidade"}), 400
 
     # Observação opcional, mas deve respeitar o tamanho da coluna.
     if dados.get("observacao") is not None and (

@@ -20,7 +20,7 @@ def listar_produtos():
         resultado.append({
             "id": produto.id,
             "nome": produto.nome,
-            "quantidade": produto.quantidade,
+           "quantidade": float(produto.quantidade),
             "quantidade_minima": produto.quantidade_minima,
             "unidade_medida": produto.unidade_medida,
             "categoria_id": produto.categoria_id
@@ -44,7 +44,7 @@ def buscar_produtos_por_categoria(categoria_id):
         resultado.append({
             "id": produto.id,
             "nome": produto.nome,
-            "quantidade": produto.quantidade,
+            "quantidade": float(produto.quantidade),
             "quantidade_minima": produto.quantidade_minima,
             "unidade_medida": produto.unidade_medida,
             "categoria_id": produto.categoria_id
@@ -67,7 +67,7 @@ def buscar_produtos_por_nome(nome):
         resultado.append({
             "id": produto.id,
             "nome": produto.nome,
-            "quantidade": produto.quantidade,
+            "quantidade": float(produto.quantidade),
             "quantidade_minima": produto.quantidade_minima,
             "unidade_medida": produto.unidade_medida,
             "categoria_id": produto.categoria_id
@@ -84,7 +84,7 @@ def cadastrar_produto():
         return jsonify({"erro": "Dados inválidos"}), 400
 
     if not all(campo in dados for campo in
-                ["nome", "quantidade", "quantidade_minima", "unidade_medida", "categoria_id"]):
+                ["nome", "quantidade_minima", "unidade_medida", "categoria_id"]):
         return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
 
     # Valida nome e limite definido no modelo.
@@ -92,9 +92,8 @@ def cadastrar_produto():
         return jsonify({"erro": "Nome inválido"}), 400
 
     # Colunas Integer aceitam somente inteiros positivos ou zero (não booleanos).
-    for campo in ("quantidade", "quantidade_minima"):
-        if type(dados.get(campo)) is not int or dados[campo] < 0:
-            return jsonify({"erro": f"{campo} deve ser inteiro não negativo"}), 400
+    if type(dados["quantidade_minima"]) is not int or dados["quantidade_minima"] < 0:
+        return jsonify({"erro": "Quantidade mínima deve ser inteiro positivo"}), 400
 
     # Aceita apenas as unidades previstas no sistema.
     if dados.get("unidade_medida") not in UNIDADES_MEDIDAS:
@@ -107,14 +106,12 @@ def cadastrar_produto():
         return jsonify({"erro": "Categoria não encontrada"}), 404
 
     nome = dados.get("nome")
-    quantidade = dados.get("quantidade", 0)
     quantidade_minima = dados.get("quantidade_minima", 0)
     unidade_medida = dados.get("unidade_medida", "unidade")
     categoria_id = dados.get("categoria_id")
 
     novo_produto = Produto(
         nome=nome,
-        quantidade=quantidade,
         quantidade_minima=quantidade_minima,
         unidade_medida=unidade_medida,
         categoria_id=categoria_id

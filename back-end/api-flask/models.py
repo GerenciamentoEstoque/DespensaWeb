@@ -27,7 +27,7 @@ class Produto(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(100), nullable=False)
-    quantidade = db.Column(db.Integer, nullable=False, default=0)
+    quantidade = db.Column(db.Numeric, default=0)
     quantidade_minima = db.Column(db.Integer, nullable=False, default=0)
     unidade_medida = db.Column(db.String(50), nullable=False, default='unidade')
 
@@ -40,7 +40,7 @@ class Movimentacao(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tipo = db.Column(db.String(10), nullable=False, default='entrada')  # 'entrada' ou 'saida'
-    observacao = db.Column(db.String(255), nullable=True)
+    observacao = db.Column(db.String(255))
     quantidade = db.Column(db.Integer, nullable=False)
     data = db.Column(db.Date, nullable=False, default=dia_atual)
 
