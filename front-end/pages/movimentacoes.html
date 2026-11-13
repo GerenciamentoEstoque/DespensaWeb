@@ -26,29 +26,33 @@
             <div class="user-info">
                 <strong>Usuário Demo</strong>
                 <div class="small text-white-50">demo@despensaweb.com</div>
-                <a href="index.html" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
+                <a href="index.html" id="botao-sair" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-grow-1 p-4 p-md-5" style="max-width: 1200px; min-width: 0;">
-            
+
             <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
                 <div>
                     <h1 class="mb-0">Movimentação</h1>
                     <p class="text-muted mb-0">Entradas e saídas do estoque.</p>
                 </div>
-                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalMovimentacao">+ Nova movimentação</button>
+                <button id="botao-nova" class="btn btn-primary fw-bold">+ Nova movimentação</button>
             </div>
 
             <!-- Filtros -->
             <div class="d-flex gap-2 mb-4 flex-wrap">
-                <select class="form-select w-auto"><option>Todos os produtos</option></select>
-                <input type="date" class="form-control w-auto">
-                <input type="date" class="form-control w-auto">
+                <select id="filtro-produto" class="form-select w-auto" aria-label="Filtrar por produto">
+                    <option value="">Todos os produtos</option>
+                </select>
+                <input type="date" id="filtro-data-inicial" class="form-control w-auto" aria-label="Data inicial" title="Data inicial">
+                <input type="date" id="filtro-data-final" class="form-control w-auto" aria-label="Data final" title="Data final">
             </div>
 
-            <!-- Tabela Estática -->
+            <p id="mensagem-lista" class="text-muted"></p>
+
+            <!-- Tabela (linhas geradas pelo JavaScript) -->
             <div class="card overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
@@ -62,32 +66,7 @@
                                 <th class="py-3">Observação</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>30/09/2026</td>
-                                <td class="fw-bold">Arroz agulhinha</td>
-                                <td>Grãos e secos</td>
-                                <td><span class="badge badge-soft-success rounded-pill px-2">Entrada</span></td>
-                                <td class="text-success">+50 kg</td>
-                                <td>Compra semanal</td>
-                            </tr>
-                            <tr>
-                                <td>28/09/2026</td>
-                                <td class="fw-bold">Arroz agulhinha</td>
-                                <td>Grãos e secos</td>
-                                <td><span class="badge badge-soft-danger rounded-pill px-2">Saída</span></td>
-                                <td class="text-danger">−8 kg</td>
-                                <td>Almoço</td>
-                            </tr>
-                            <tr>
-                                <td>25/09/2026</td>
-                                <td class="fw-bold">Azeite extra virgem</td>
-                                <td>Grãos e secos</td>
-                                <td><span class="badge badge-soft-danger rounded-pill px-2">Saída</span></td>
-                                <td class="text-danger">−4 L</td>
-                                <td>Acabou</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="corpo-movimentacoes"></tbody>
                     </table>
                 </div>
             </div>
@@ -102,49 +81,50 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label fw-bold small text-secondary">Produto</label>
-                                <select class="form-select">
-                                    <option>Arroz agulhinha (42 kg)</option>
-                                    <option>Leite integral (18 L)</option>
-                                </select>
+                                <label for="mov-produto" class="form-label fw-bold small text-secondary">Produto</label>
+                                <select id="mov-produto" class="form-select"></select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary">Tipo</label>
                                 <div class="d-flex gap-2">
-                                    <input type="radio" class="btn-check" name="tipo" id="ent" autocomplete="off" checked>
-                                    <label class="btn btn-outline-success w-50" for="ent">⬇️ Entrada</label>
-                                    
-                                    <input type="radio" class="btn-check" name="tipo" id="sai" autocomplete="off">
-                                    <label class="btn btn-outline-danger w-50" for="sai">⬆️ Saída</label>
+                                    <input type="radio" class="btn-check" name="tipo" id="tipo-entrada" autocomplete="off" checked>
+                                    <label class="btn btn-outline-success w-50" for="tipo-entrada">⬇️ Entrada</label>
+
+                                    <input type="radio" class="btn-check" name="tipo" id="tipo-saida" autocomplete="off">
+                                    <label class="btn btn-outline-danger w-50" for="tipo-saida">⬆️ Saída</label>
                                 </div>
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
-                                    <label class="form-label fw-bold small text-secondary">Quantidade</label>
-                                    <input type="number" class="form-control" value="1">
+                                    <label for="mov-quantidade" class="form-label fw-bold small text-secondary">Quantidade</label>
+                                    <input type="number" id="mov-quantidade" class="form-control" min="0">
                                 </div>
                                 <div class="col-sm-6">
-                                    <label class="form-label fw-bold small text-secondary">Data</label>
-                                    <input type="date" class="form-control" value="2026-09-30">
+                                    <label for="mov-saldo" class="form-label fw-bold small text-secondary">Saldo atual</label>
+                                    <input type="text" id="mov-saldo" class="form-control" disabled>
                                 </div>
                             </div>
                             <div>
-                                <label class="form-label fw-bold small text-secondary">Observação (opcional)</label>
-                                <input type="text" class="form-control">
+                                <label for="mov-observacao" class="form-label fw-bold small text-secondary">Observação (opcional)</label>
+                                <input type="text" id="mov-observacao" class="form-control" maxlength="200">
                             </div>
+                            <p class="small text-muted mt-3 mb-0">A data é registrada automaticamente.</p>
+                            <p id="erro-movimentacao" class="text-danger small mt-2 mb-0" role="alert"></p>
                         </div>
                         <div class="modal-footer border-0 pt-0">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirmar</button>
+                            <button type="button" id="botao-salvar-movimentacao" class="btn btn-primary">Confirmar</button>
                         </div>
                     </div>
                 </div>
             </div>
-        
+
         </main>
     </div>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/movimentacoes.js"></script>
 </body>
 </html>

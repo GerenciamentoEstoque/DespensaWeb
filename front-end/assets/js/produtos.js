@@ -4,6 +4,7 @@ const corpoTabela = document.getElementById("corpo-produtos");
 const mensagemLista = document.getElementById("mensagem-lista");
 const filtroCategoria = document.getElementById("filtro-categoria");
 const filtroBusca = document.getElementById("filtro-busca");
+const avisoExclusao = document.getElementById("aviso-exclusao");
 
 const modalProduto = bootstrap.Modal.getOrCreateInstance(
     document.getElementById("modalProduto")
@@ -353,43 +354,41 @@ async function salvar() {
 
 // ---------- Exclusão ----------
 
-function abrirExclusao(produto) {
-    idExcluindo = produto.id;
-    nomeExcluir.textContent = produto.nome;
+async function abrirExclusao(categoria) {
+    idExcluindo = categoria.id;
+    nomeExcluir.textContent = categoria.nome;
     erroExclusao.textContent = "";
-    modalDelete.show();
-}
-
-async function excluir() {
-    erroExclusao.textContent = "";
+    avisoExclusao.textContent = "Verificando produtos e movimentações...";
     botaoExcluir.disabled = true;
+    modalDelete.show();
 
     try {
-        const { ok, dados } = await apiFetch(
-            `/produtos/excluir/${idExcluindo}`,
-            { metodo: "DELETE" }
-        );
+        // Duas consultas ao mesmo tempo.
+        const [resProdutos, resMovs] = await Promise.all([
+            apiFetch("/produtos/listar"),
+            apiFetch("/movimentacoes/listar")
+        ]);
 
-        if (!ok) {
-            // Ex.: produto com movimentações não pode ser excluído.
-            erroExclusao.textContent =
-                dados.erro || dados.msg || "Não foi possível excluir.";
-            return;
-        }
+        const produtosDaCategoria =
+            resProdutos.ok && Array.isArray(resProdutos.dados)
+                ? resProdutos.dados.filter((p) => p.categoria_id === categoria.id)
+                : [];
 
-        document.activeElement.blur();
-        modalDelete.hide();
-        await carregarProdutos();
+        const idsDosProdutos = new Set(produtosDaCategoria.map((p) => p.id));
+
+        const totalMovs =
+            resMovs.ok && Array.isArray(resMovs.dados)
+                ? resMovs.dados.filter((m) => idsDosProdutos.has(m.produto_id)).length
+                : 0;
+
+        avisoExclusao.textContent = produtosDaCategoria.length === 0
+            ? "Esta categoria não tem produtos. Essa ação não pode ser desfeita."
+            : `Também serão excluídos ${produtosDaCategoria.length} produto(s) e ${totalMovs} movimentação(ões). Essa ação não pode ser desfeita.`;
     } catch (erro) {
         console.error(erro);
-        erroExclusao.textContent = "Falha ao acessar a API.";
+        avisoExclusao.textContent =
+            "Todos os produtos desta categoria e as movimentações deles serão excluídos junto. Essa ação não pode ser desfeita.";
     } finally {
         botaoExcluir.disabled = false;
     }
 }
-
-document.getElementById("botao-novo").addEventListener("click", abrirNovo);
-botaoSalvar.addEventListener("click", salvar);
-botaoExcluir.addEventListener("click", excluir);
-
-iniciar();
