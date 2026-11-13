@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from database import db
 from models import Movimentacao, Produto, TIPO_MOVIMENTACAO
+from decimal import Decimal
 
 movimentacao_bp = Blueprint("movimentacoes", __name__)
 
@@ -136,8 +137,17 @@ def cadastrar_movimentacao():
     if  dados["quantidade"] <= 0:
         return jsonify({"erro": "Quantidade inválida"}), 400
 
-    if  dados["quantidade"] not in int and dados["unidade_medida"] == "unidade":
-        return jsonify({"erro": "Não é possível utilizar número decimal sendo unidade"}), 400
+    produto = Produto.query.get(dados["produto_id"])
+
+    if not produto:
+        return jsonify({"erro": "Produto não encontrado."}), 404
+
+    quantidade = Decimal(str(dados["quantidade"]))
+
+    if produto.unidade_medida == "unidade" and quantidade % Decimal("1") != 0:
+        return jsonify({
+            "erro": "Não é possível utilizar número decimal sendo unidade."
+        }), 400
 
     # Observação opcional, mas deve respeitar o tamanho da coluna.
     if dados.get("observacao") is not None and (
@@ -175,7 +185,7 @@ def cadastrar_movimentacao():
 
     tipo = dados.get("tipo")
     observacao = dados.get("observacao")
-    quantidade = dados.get("quantidade", 0)
+    quantidade = dados.get("quantidade")
     produto_id = dados.get("produto_id")
 
     nova_movimentacao = Movimentacao(
