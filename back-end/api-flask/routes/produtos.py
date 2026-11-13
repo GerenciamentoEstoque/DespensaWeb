@@ -190,11 +190,10 @@ def excluir_produto(id):
     if not produto:
         return jsonify({"erro": "Produto não encontrado"}), 404
 
-    # Protege o histórico: um produto movimentado não pode ser excluído.
-    if db.session.execute(db.select(Movimentacao.id).where(
-        Movimentacao.produto_id == id
-    )).first():
-        return jsonify({"erro": "Produto possui movimentações"}), 409
+    produto = Produto.query.get(id)
+
+    if not produto:
+        return jsonify({"erro": "Produto não encontrado"}), 404
 
     db.session.delete(produto)
     db.session.commit()
