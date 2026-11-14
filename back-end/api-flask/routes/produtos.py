@@ -20,7 +20,7 @@ def listar_produtos():
         resultado.append({
             "id": produto.id,
             "nome": produto.nome,
-            "quantidade": produto.quantidade,
+           "quantidade": float(produto.quantidade),
             "quantidade_minima": produto.quantidade_minima,
             "unidade_medida": produto.unidade_medida,
             "categoria_id": produto.categoria_id
@@ -44,7 +44,7 @@ def buscar_produtos_por_categoria(categoria_id):
         resultado.append({
             "id": produto.id,
             "nome": produto.nome,
-            "quantidade": produto.quantidade,
+            "quantidade": float(produto.quantidade),
             "quantidade_minima": produto.quantidade_minima,
             "unidade_medida": produto.unidade_medida,
             "categoria_id": produto.categoria_id
@@ -67,7 +67,7 @@ def buscar_produtos_por_nome(nome):
         resultado.append({
             "id": produto.id,
             "nome": produto.nome,
-            "quantidade": produto.quantidade,
+            "quantidade": float(produto.quantidade),
             "quantidade_minima": produto.quantidade_minima,
             "unidade_medida": produto.unidade_medida,
             "categoria_id": produto.categoria_id
@@ -84,17 +84,25 @@ def cadastrar_produto():
         return jsonify({"erro": "Dados inválidos"}), 400
 
     if not all(campo in dados for campo in
-                ["nome", "quantidade", "quantidade_minima", "unidade_medida", "categoria_id"]):
+                ["nome", "quantidade_minima", "unidade_medida", "categoria_id"]):
         return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
 
     # Valida nome e limite definido no modelo.
     if not isinstance(dados.get("nome"), str) or not dados["nome"].strip() or len(dados["nome"].strip()) > 100:
         return jsonify({"erro": "Nome inválido"}), 400
+    
+    produto_existente = Produto.query.filter(
+    db.func.lower(Produto.nome) == dados["nome"].lower()
+    ).first()
+
+    if produto_existente:
+        return jsonify({
+            "erro": "Já existe um produto cadastrado com esse nome."
+        }), 409
 
     # Colunas Integer aceitam somente inteiros positivos ou zero (não booleanos).
-    for campo in ("quantidade", "quantidade_minima"):
-        if type(dados.get(campo)) is not int or dados[campo] < 0:
-            return jsonify({"erro": f"{campo} deve ser inteiro não negativo"}), 400
+    if type(dados["quantidade_minima"]) is not int or dados["quantidade_minima"] < 0:
+        return jsonify({"erro": "Quantidade mínima deve ser inteiro positivo"}), 400
 
     # Aceita apenas as unidades previstas no sistema.
     if dados.get("unidade_medida") not in UNIDADES_MEDIDAS:
@@ -107,14 +115,12 @@ def cadastrar_produto():
         return jsonify({"erro": "Categoria não encontrada"}), 404
 
     nome = dados.get("nome")
-    quantidade = dados.get("quantidade", 0)
     quantidade_minima = dados.get("quantidade_minima", 0)
     unidade_medida = dados.get("unidade_medida", "unidade")
     categoria_id = dados.get("categoria_id")
 
     novo_produto = Produto(
         nome=nome,
-        quantidade=quantidade,
         quantidade_minima=quantidade_minima,
         unidade_medida=unidade_medida,
         categoria_id=categoria_id
@@ -184,11 +190,10 @@ def excluir_produto(id):
     if not produto:
         return jsonify({"erro": "Produto não encontrado"}), 404
 
-    # Protege o histórico: um produto movimentado não pode ser excluído.
-    if db.session.execute(db.select(Movimentacao.id).where(
-        Movimentacao.produto_id == id
-    )).first():
-        return jsonify({"erro": "Produto possui movimentações"}), 409
+    produto = Produto.query.get(id)
+
+    if not produto:
+        return jsonify({"erro": "Produto não encontrado"}), 404
 
     db.session.delete(produto)
     db.session.commit()

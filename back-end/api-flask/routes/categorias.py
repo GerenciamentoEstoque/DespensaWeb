@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from database import db
-from models import Categoria, Produto
+from models import Categoria
 categoria_bp = Blueprint("categorias", __name__)
 # region Categorias
 
@@ -38,6 +38,15 @@ def cadastrar_categoria():
     nome = dados["nome"].strip()
     if len(nome) > 100:
         return jsonify({"erro": "Nome muito longo"}), 400
+    
+    categoria_existente = Categoria.query.filter(
+    db.func.lower(Categoria.nome) == dados["nome"].lower()
+    ).first()
+
+    if categoria_existente:
+        return jsonify({
+            "erro": "Já existe um categoria cadastrada com esse nome."
+        }), 409
 
     nova_categoria = Categoria(
         nome=nome
@@ -84,12 +93,6 @@ def excluir_categoria(id):
 
     if not categoria:
         return jsonify({"erro": "Categoria não encontrada"}), 404
-
-    # Não permite excluir uma categoria utilizada por produtos.
-    if db.session.execute(db.select(Produto.id).where(
-        Produto.categoria_id == id
-    )).first():
-        return jsonify({"erro": "Categoria possui produtos"}), 409
 
     db.session.delete(categoria)
     db.session.commit()
