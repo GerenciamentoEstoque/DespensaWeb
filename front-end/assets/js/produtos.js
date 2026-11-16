@@ -1,4 +1,5 @@
 exigirLogin();
+carregarUsuarioMenu();
 
 const corpoTabela = document.getElementById("corpo-produtos");
 const mensagemLista = document.getElementById("mensagem-lista");
@@ -41,10 +42,7 @@ let idEditando = null;
 let produtoEditando = null;
 let idExcluindo = null;
 
-document.getElementById("botao-sair").addEventListener("click", (event) => {
-    event.preventDefault();
-    sair();
-});
+
 
 // ---------- Auxiliares ----------
 

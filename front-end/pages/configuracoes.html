@@ -24,15 +24,15 @@
             </ul>
             <hr class="border-secondary">
             <div class="user-info">
-                <strong>Usuário Demo</strong>
-                <div class="small text-white-50">demo@despensaweb.com</div>
-                <a href="index.html" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
+                <strong>Usuário</strong>
+                <div class="small text-white-50"></div>
+                <a href="index.html" id="botao-sair" class="text-warning text-decoration-none mt-1 d-block small">Sair</a>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-grow-1 p-4 p-md-5" style="max-width: 1200px; min-width: 0;">
-            
+
             <div class="mb-4">
                 <h1 class="mb-0">Configurações</h1>
                 <p class="text-muted mb-0">Seus dados e sua senha.</p>
@@ -40,44 +40,48 @@
 
             <div class="row g-4">
                 <div class="col-md-6">
-                    <form class="card p-4">
+                    <form class="card p-4" id="form-perfil">
                         <h4 class="mb-4">Dados pessoais</h4>
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-secondary">Nome</label>
-                            <input type="text" class="form-control" value="Usuário Demo">
+                            <input type="text" class="form-control" id="perfil-nome" required>
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-secondary">E-mail</label>
-                            <input type="email" class="form-control" value="demo@despensaweb.com">
+                            <input type="email" class="form-control" id="perfil-email" required>
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="alert('Salvo!')">Salvar dados</button>
+                        <button type="submit" class="btn btn-primary" id="botao-perfil">Salvar dados</button>
+                        <div class="small mt-3" id="mensagem-perfil"></div>
                     </form>
                 </div>
-                
+
                 <div class="col-md-6">
-                    <form class="card p-4">
+                    <form class="card p-4" id="form-senha">
                         <h4 class="mb-4">Alterar senha</h4>
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-secondary">Senha atual</label>
-                            <input type="password" class="form-control">
+                            <input type="password" class="form-control" id="senha-atual" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-secondary">Nova senha</label>
-                            <input type="password" class="form-control">
+                            <input type="password" class="form-control" id="nova-senha" required>
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-secondary">Confirmar nova senha</label>
-                            <input type="password" class="form-control">
+                            <input type="password" class="form-control" id="confirmacao-senha" required>
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="alert('Senha alterada!')">Alterar senha</button>
+                        <button type="submit" class="btn btn-primary" id="botao-senha">Alterar senha</button>
+                        <div class="small mt-3" id="mensagem-senha"></div>
                     </form>
                 </div>
             </div>
-        
+
         </main>
     </div>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/configuracoes.js"></script>
 </body>
 </html>

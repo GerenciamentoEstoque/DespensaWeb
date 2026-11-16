@@ -1,4 +1,5 @@
 exigirLogin();
+carregarUsuarioMenu();
 
 const listaCategorias = document.getElementById("lista-categorias");
 const mensagemLista = document.getElementById("mensagem-lista");
@@ -22,11 +23,6 @@ const botaoExcluir = document.getElementById("botao-confirmar-exclusao");
 // null = cadastrando; um número = editando aquela categoria.
 let idEditando = null;
 let idExcluindo = null;
-
-document.getElementById("botao-sair").addEventListener("click", (event) => {
-    event.preventDefault();
-    sair();
-});
 
 // ---------- Listagem ----------
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Entrar · Despensa Web</title>
+    <title>Redefinir senha · Despensa Web</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
@@ -25,30 +25,34 @@
         </div>
         <div class="col-lg-6 d-flex align-items-center justify-content-center p-4">
             <div style="width: 100%; max-width: 400px;">
-                
-            <h2 class="mb-1">Redefinir Senha</h2>
-            <p class="text-muted mb-4">Informe o token e sua nova senha.</p>
-            <form action="inicio.html">
+
+            <h2 class="mb-1">Redefinir senha</h2>
+            <p class="text-muted mb-4">Informe o código recebido por e-mail e sua nova senha.</p>
+            <form id="form-redefinir">
                 <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Token</label>
-                    <input type="text" class="form-control" required>
+                    <label class="form-label fw-bold small text-secondary">Código</label>
+                    <input type="text" class="form-control" id="codigo" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Nova senha</label>
+                    <input type="password" class="form-control" id="nova-senha" required>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Nova Senha</label>
-                    <input type="password" class="form-control" required>
-                <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Confirmar Senha</label>
-                    <input type="password" class="form-control" required>
+                    <label class="form-label fw-bold small text-secondary">Confirmar senha</label>
+                    <input type="password" class="form-control" id="confirmacao" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Redefinir</button>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" id="botao-redefinir">Redefinir</button>
+                <div class="small mt-3" id="mensagem"></div>
                 <div class="d-flex justify-content-between mt-3 small">
                     <a href="index.html" class="text-decoration-none text-primary">Login</a>
                     <a href="cadastro.html" class="text-decoration-none text-primary">Criar conta</a>
                 </div>
             </form>
-        
+
             </div>
         </div>
     </div>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/redefinir-senha.js"></script>
 </body>
 </html>

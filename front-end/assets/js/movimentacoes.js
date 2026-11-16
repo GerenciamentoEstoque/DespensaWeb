@@ -1,4 +1,5 @@
 exigirLogin();
+carregarUsuarioMenu();
 
 const corpoTabela = document.getElementById("corpo-movimentacoes");
 const mensagemLista = document.getElementById("mensagem-lista");
@@ -27,11 +28,6 @@ const FATOR = 10 ** CASAS;
 let categorias = [];
 let produtos = [];
 let movimentacoes = [];
-
-document.getElementById("botao-sair").addEventListener("click", (event) => {
-    event.preventDefault();
-    sair();
-});
 
 // ---------- Auxiliares ----------
 
