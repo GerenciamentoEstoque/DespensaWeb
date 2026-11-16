@@ -354,41 +354,62 @@ async function salvar() {
 
 // ---------- Exclusão ----------
 
-async function abrirExclusao(categoria) {
-    idExcluindo = categoria.id;
-    nomeExcluir.textContent = categoria.nome;
+async function abrirExclusao(produto) {
+    idExcluindo = produto.id;
+    nomeExcluir.textContent = produto.nome;
     erroExclusao.textContent = "";
-    avisoExclusao.textContent = "Verificando produtos e movimentações...";
+    avisoExclusao.textContent = "Verificando movimentações...";
     botaoExcluir.disabled = true;
     modalDelete.show();
 
     try {
-        // Duas consultas ao mesmo tempo.
-        const [resProdutos, resMovs] = await Promise.all([
-            apiFetch("/produtos/listar"),
-            apiFetch("/movimentacoes/listar")
-        ]);
+        const { ok, dados } = await apiFetch(
+            `/movimentacoes/buscar/produto/${produto.id}`
+        );
+        // 404 significa "nenhuma movimentação", então conta como 0.
+        const total = ok && Array.isArray(dados) ? dados.length : 0;
 
-        const produtosDaCategoria =
-            resProdutos.ok && Array.isArray(resProdutos.dados)
-                ? resProdutos.dados.filter((p) => p.categoria_id === categoria.id)
-                : [];
-
-        const idsDosProdutos = new Set(produtosDaCategoria.map((p) => p.id));
-
-        const totalMovs =
-            resMovs.ok && Array.isArray(resMovs.dados)
-                ? resMovs.dados.filter((m) => idsDosProdutos.has(m.produto_id)).length
-                : 0;
-
-        avisoExclusao.textContent = produtosDaCategoria.length === 0
-            ? "Esta categoria não tem produtos. Essa ação não pode ser desfeita."
-            : `Também serão excluídos ${produtosDaCategoria.length} produto(s) e ${totalMovs} movimentação(ões). Essa ação não pode ser desfeita.`;
+        avisoExclusao.textContent = total === 0
+            ? "Este produto não tem movimentações. Essa ação não pode ser desfeita."
+            : `Também serão excluídas ${total} movimentação(ões) deste produto. Essa ação não pode ser desfeita.`;
     } catch (erro) {
         console.error(erro);
         avisoExclusao.textContent =
-            "Todos os produtos desta categoria e as movimentações deles serão excluídos junto. Essa ação não pode ser desfeita.";
+            "Todas as movimentações deste produto serão excluídas junto. Essa ação não pode ser desfeita.";
     } finally {
         botaoExcluir.disabled = false;
     }
 }
+
+async function excluir() {
+    erroExclusao.textContent = "";
+    botaoExcluir.disabled = true;
+
+    try {
+        const { ok, dados } = await apiFetch(
+            `/produtos/excluir/${idExcluindo}`,
+            { metodo: "DELETE" }
+        );
+
+        if (!ok) {
+            erroExclusao.textContent =
+                dados.erro || dados.msg || "Não foi possível excluir.";
+            return;
+        }
+
+        document.activeElement.blur();
+        modalDelete.hide();
+        await carregarProdutos();
+    } catch (erro) {
+        console.error(erro);
+        erroExclusao.textContent = "Falha ao acessar a API.";
+    } finally {
+        botaoExcluir.disabled = false;
+    }
+}
+
+document.getElementById("botao-novo").addEventListener("click", abrirNovo);
+botaoSalvar.addEventListener("click", salvar);
+botaoExcluir.addEventListener("click", excluir);
+
+iniciar();
