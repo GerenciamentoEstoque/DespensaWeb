@@ -1,3 +1,6 @@
+exigirLogin();
+carregarUsuarioMenu();
+
 const seletorUnidade = document.getElementById("unidade-grafico");
 const mensagem = document.getElementById("mensagem-grafico");
 const container = document.getElementById("container-grafico");

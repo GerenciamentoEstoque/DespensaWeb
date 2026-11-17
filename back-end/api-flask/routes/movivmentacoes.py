@@ -133,6 +133,8 @@ def cadastrar_movimentacao():
     if dados.get("tipo") not in TIPO_MOVIMENTACAO:
         return jsonify({"erro": "Tipo de movimentação inválido"}), 400
 
+    
+
     # Movimentações precisam ter quantidade inteira e maior que zero.
     if  dados["quantidade"] <= 0:
         return jsonify({"erro": "Quantidade inválida"}), 400
@@ -142,9 +144,10 @@ def cadastrar_movimentacao():
     if not produto:
         return jsonify({"erro": "Produto não encontrado."}), 404
 
-    quantidade = Decimal(str(dados["quantidade"]))
+    quantidade_produto = Decimal(str(produto.quantidade))
+    quantidade_movimentacao = Decimal(str(dados["quantidade"]))
 
-    if produto.unidade_medida == "unidade" and quantidade % Decimal("1") != 0:
+    if produto.unidade_medida == "unidade" and quantidade_movimentacao % Decimal("1") != 0:
         return jsonify({
             "erro": "Não é possível utilizar número decimal sendo unidade."
         }), 400
@@ -168,7 +171,7 @@ def cadastrar_movimentacao():
     ).scalars().first()
 
     # Estoque insuficiente só se aplica às SAÍDAS, não às ENTRADAS.
-    if dados["tipo"] == "saida" and quantidade_produto - dados["quantidade"] < 0:
+    if dados["tipo"] == "saida" and quantidade_produto - quantidade_movimentacao < 0:
         return jsonify({"erro": "Quantidade insuficiente para a movimentação"}), 400
     else:
         if dados["tipo"] == "entrada":

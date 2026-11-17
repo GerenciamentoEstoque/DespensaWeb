@@ -46,7 +46,7 @@
                     <div class="card p-3 h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="fs-2 bg-light rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1;">📦</div>
-                            <div><h3 class="mb-0">8</h3><small class="text-muted">Produtos cadastrados</small></div>
+                            <div><h3 id="total-produtos" class="mb-0">-</h3><small class="text-muted">Produtos cadastrados</small></div>
                         </div>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                     <div class="card p-3 h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="fs-2 bg-light rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1;">✅</div>
-                            <div><h3 class="mb-0">5</h3><small class="text-muted">Com estoque ok</small></div>
+                            <div><h3 id="estoque-ok" class="mb-0">-</h3><small class="text-muted">Com estoque ok</small></div>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                     <div class="card p-3 h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="fs-2 rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1; background-color: #fdeccb;">⚠️</div>
-                            <div><h3 class="mb-0">2</h3><small class="text-muted">Acabando</small></div>
+                            <div><h3 id="produtos-acabando" class="mb-0">-</h3><small class="text-muted">Acabando</small></div>
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                     <div class="card p-3 h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="fs-2 rounded p-2 text-center" style="width: 50px; height: 50px; line-height: 1; background-color: #f9d9d6;">⛔</div>
-                            <div><h3 class="mb-0">1</h3><small class="text-muted">Em falta</small></div>
+                            <div><h3 id="produtos-em-falta" class="mb-0">-</h3><small class="text-muted">Em falta</small></div>
                         </div>
                     </div>
                 </div>
@@ -118,33 +118,10 @@
                     <div class="card p-4 h-100">
                         <h4 class="mb-4">Estoque baixo</h4>
                         
-                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold small">Feijão carioca</div>
-                                <div class="text-muted" style="font-size: 0.8rem;">8 kg · mín. 12</div>
-                            </div>
-                            <span class="badge badge-soft-warning rounded-pill px-2">Acabando</span>
-                        </div>
-                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold small">Carne moída</div>
-                                <div class="text-muted" style="font-size: 0.8rem;">6 kg · mín. 8</div>
-                            </div>
-                            <span class="badge badge-soft-warning rounded-pill px-2">Acabando</span>
-                        </div>
-                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold small">Queijo mussarela</div>
-                                <div class="text-muted" style="font-size: 0.8rem;">3 kg · mín. 5</div>
-                            </div>
-                            <span class="badge badge-soft-warning rounded-pill px-2">Acabando</span>
-                        </div>
-                        <div class="bg-light rounded p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold small">Azeite extra virgem</div>
-                                <div class="text-muted" style="font-size: 0.8rem;">0 L · mín. 4</div>
-                            </div>
-                            <span class="badge badge-soft-danger rounded-pill px-2">Em falta</span>
+                        <div id="lista-produtos-baixos">
+                            <p class="text-muted small">
+                                Carregando produtos...
+                            </p>
                         </div>
 
                     </div>
@@ -157,7 +134,13 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    
     <script src="../assets/js/api.js"></script>
+
+    <script src="../assets/js/indicadores.js"></script>
+
+    <script src="../assets/js/produtos-baixos.js"></script>
+
     <script src="../assets/js/dashboard.js"></script>
 </body>
 </html>
