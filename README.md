@@ -1,18 +1,22 @@
 # DespensaWeb
 
-Projeto de gerenciamento de estoque de uma despensa/restaurante, com API REST em Python e páginas HTML para cadastro, consulta de produtos, categorias e movimentações.
+Projeto de gerenciamento de estoque de uma despensa/restaurante, com API REST em Python e páginas HTML (Bootstrap + JavaScript) para cadastro, consulta de produtos, categorias e movimentações, além de um dashboard com indicadores e gráfico de estoque.
 
 O backend utiliza Flask, SQLAlchemy ORM e SQLite. A autenticação usa JWT, as senhas são armazenadas como hash e a recuperação de senha utiliza um token temporário enviado por e-mail.
 
 ## Estado atual
 
-- API com cadastro de usuários, login, alteração de perfil e senha e recuperação de acesso.
+- API com cadastro de usuários, login, consulta, alteração de perfil e senha e recuperação de acesso.
 - Cadastro, consulta, edição e exclusão de categorias e produtos, com validações.
 - Registro de entradas e saídas, com identificação do autor pelo JWT e consulta do histórico por produto ou data.
 - Edição de produto preserva o saldo: para alterar estoque de um produto existente, use movimentações.
 - Edição e exclusão de movimentações não estão disponíveis. A exclusão de usuários está desativada.
-- Dashboard autenticado disponível em `GET /dashboard`, com indicadores de estoque, lista de produtos baixos e dados para o gráfico; o frontend ainda não consome esses dados.
-- O frontend é um protótipo HTML/CSS/Bootstrap: os formulários ainda não consomem a API. Navegar para a página inicial não comprova autenticação.
+- A exclusão de um produto também remove as movimentações dele; o frontend informa quantas serão excluídas antes de confirmar.
+- Dashboard autenticado disponível em `GET /dashboard`, com indicadores de estoque, lista de produtos baixos e dados para o gráfico. A tela inicial já consome esses dados.
+- O frontend (HTML/CSS/Bootstrap + JavaScript puro) está integrado à API em todas as telas: login, cadastro, início (dashboard), produtos, categorias, movimentações, configurações, esqueci a senha e redefinir senha.
+- O menu lateral das páginas internas mostra o nome e o e-mail do usuário logado, e o botão **Sair** encerra a sessão.
+- O token JWT fica no `sessionStorage` do navegador. O `exigirLogin()` apenas redireciona para o login quando não há token; a proteção real dos dados é feita pela API, que valida o JWT em cada requisição.
+- Os fluxos principais do frontend foram testados manualmente: sessão e menu, alteração de dados e de senha (incluindo senha atual incorreta e e-mail já cadastrado), recuperação de senha com envio real de e-mail e operações de produtos, categorias e movimentações.
 
 ## Tecnologias e dependências
 
@@ -27,8 +31,10 @@ O backend utiliza Flask, SQLAlchemy ORM e SQLite. A autenticação usa JWT, as s
 | itsdangerous | Assinatura e validade do token de recuperação |
 | python-dotenv | Leitura do arquivo `.env` |
 | HTML, CSS e Bootstrap 5.3.3 | Interface; Bootstrap carregado por CDN |
+| JavaScript (fetch API) | Consumo da API pelo navegador, sem frameworks |
+| Chart.js 4 | Gráfico de estoque do dashboard; carregado por CDN |
 
-As versões das dependências diretas estão fixadas em `back-end/requirements.txt`, com base no ambiente local. O arquivo não é um lock completo de dependências transitivas. `smtplib`, `email`, `hashlib`, `hmac` e `sqlite3` fazem parte da biblioteca padrão do Python e não precisam ser instalados com pip.
+As versões das dependências diretas do backend estão fixadas em `back-end/requirements.txt`, com base no ambiente local. O arquivo não é um lock completo de dependências transitivas. `smtplib`, `email`, `hashlib`, `hmac` e `sqlite3` fazem parte da biblioteca padrão do Python e não precisam ser instalados com pip.
 
 ## Estrutura
 
@@ -48,12 +54,23 @@ DespensaWeb/
 │           ├── usuarios.py
 │           ├── categorias.py
 │           ├── produtos.py
-│           └── movivmentacoes.py
-│           ├── dashboard.py  # resumo de estoque e dados para o gráfico
+│           ├── movivmentacoes.py
+│           └── dashboard.py  # resumo de estoque e dados para o gráfico
 └── front-end/
     ├── assets/
     │   ├── css/style.css
-    │   └── img/fundo.jpg
+    │   ├── img/fundo.jpg
+    │   └── js/
+    │       ├── api.js                # apiFetch, token, exigirLogin, sair e menu do usuário
+    │       ├── produtos.js
+    │       ├── categorias.js
+    │       ├── movimentacoes.js
+    │       ├── configuracoes.js
+    │       ├── esqueci-senha.js
+    │       ├── redefinir-senha.js
+    │       ├── indicadores.js        # cartões de indicadores do dashboard
+    │       ├── produtos-baixos.js    # lista de produtos acabando ou em falta
+    │       └── dashboard.js          # gráfico de estoque (além dos scripts de login e cadastro)
     └── pages/
         ├── index.html
         ├── cadastro.html
@@ -104,9 +121,9 @@ Gere duas chaves diferentes, executando este comando uma vez para cada chave:
 .\venv\Scripts\python.exe -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-O envio usa `smtplib.SMTP_SSL`. Um serviço que exija STARTTLS precisa de adaptação no código; mudar somente a porta para `587` não implementa esse protocolo. As configurações SMTP são necessárias para enviar recuperações, mas não para cadastrar usuários ou fazer login.
+O envio usa `smtplib.SMTP_SSL`. Um serviço que exija STARTTLS precisa de adaptação no código; mudar somente a porta para `587` não implementa esse protocolo. As configurações SMTP são necessárias para enviar recuperações, mas não para cadastrar usuários ou fazer login. Sem elas, a API responde `503` ao solicitar a recuperação e a tela exibe um aviso.
 
-O arquivo `.env` já é ignorado pelo Git. O `.env.example` contém somente exemplos. A URI do banco, a duração do JWT e o prazo do reset são definidos no código: adicionar variáveis com esses nomes ao `.env` não muda a configuração atual.
+Use uma senha de aplicativo do provedor, e não a senha normal da conta (no Gmail, é necessário ativar a verificação em duas etapas para criá-la). O arquivo `.env` já é ignorado pelo Git. O `.env.example` contém somente exemplos. Confira com `git status` antes de cada commit para garantir que nenhuma credencial seja enviada ao repositório. A URI do banco, a duração do JWT e o prazo do reset são definidos no código: adicionar variáveis com esses nomes ao `.env` não muda a configuração atual. Depois de editar o `.env`, reinicie a API.
 
 ### Iniciar a API
 
@@ -177,17 +194,19 @@ As tabelas são criadas automaticamente com `db.create_all()` ao carregar a apli
 
 As entidades são `Usuario`, `Categoria`, `Produto` e `Movimentacao`. Cada produto pertence a uma categoria, e cada movimentação referencia um produto e um usuário.
 
-`db.create_all()` cria tabelas ausentes, mas não migra tabelas existentes. Alterações futuras no esquema precisam de migrações. Faça backup do banco antes de modificá-lo.
+`db.create_all()` cria tabelas ausentes, mas não migra tabelas existentes. Alterações futuras no esquema (como a mudança de tipo das colunas de quantidade) precisam de migrações; em ambiente de desenvolvimento, apagar o arquivo do banco recria as tabelas com o esquema atual, mas remove todos os dados. Faça backup do banco antes de modificá-lo.
 
 ### Visualizar o frontend
 
-Abra `front-end/pages/index.html` no navegador ou use um servidor estático. Por exemplo, em outro terminal, na raiz:
+Mantenha a API em execução (seção anterior) e, em outro terminal, na raiz do projeto, inicie um servidor estático. São necessários dois terminais abertos ao mesmo tempo: um para a API (porta 5000) e outro para o frontend (porta 5500).
 
 ```powershell
 .\venv\Scripts\python.exe -m http.server 5500 --bind 127.0.0.1 --directory .\front-end
 ```
 
-Acesse `http://127.0.0.1:5500/pages/index.html`. O servidor apenas exibe as telas; ainda é necessário integrar os formulários aos endpoints. O Bootstrap via CDN requer acesso à internet.
+Acesse `http://127.0.0.1:5500/pages/index.html`. As telas se comunicam com a API em `http://127.0.0.1:5000`, definida em `front-end/assets/js/api.js`; sem a API ligada, login e listagens falham. Bootstrap e Chart.js são carregados por CDN e requerem acesso à internet. Se uma alteração em arquivos JS não aparecer, recarregue a página com `Ctrl+F5` para ignorar o cache do navegador.
+
+Fluxo básico de uso: crie uma conta em `cadastro.html`, entre pelo `index.html` e navegue pelo menu lateral. A sessão dura enquanto o token for válido (120 minutos) e a aba do navegador estiver aberta; ao expirar, a pessoa é redirecionada ao login.
 
 ## Uso da API
 
@@ -272,7 +291,7 @@ Todas as rotas abaixo exigem JWT, exceto as marcadas como públicas.
 | POST | `/auth/redefinir-senha` | Redefinir senha com token | Público |
 | PUT | `/auth/alterar-senha` | Alterar a própria senha | JWT |
 | GET | `/usuarios/listar` | Listar usuários | JWT |
-| GET | `/usuarios/buscar/<id>` | Consultar usuário por ID | JWT |
+| GET | `/usuarios/buscar/<id>` | Consultar usuário por ID (`id`, `nome`, `email`) | JWT |
 | PUT | `/usuarios/atualizar` | Alterar nome e e-mail do usuário autenticado | JWT |
 | GET | `/categorias/listar` | Listar categorias | JWT |
 | GET | `/categorias/buscar/<id>` | Consultar categoria | JWT |
@@ -285,7 +304,7 @@ Todas as rotas abaixo exigem JWT, exceto as marcadas como públicas.
 | GET | `/produtos/buscar/nome/<nome>` | Filtrar por parte do nome | JWT |
 | POST | `/produtos/cadastrar` | Criar produto | JWT |
 | PUT | `/produtos/atualizar/<id>` | Editar dados do produto, preservando saldo | JWT |
-| DELETE | `/produtos/excluir/<id>` | Excluir produto sem movimentações | JWT |
+| DELETE | `/produtos/excluir/<id>` | Excluir produto e suas movimentações | JWT |
 | GET | `/movimentacoes/listar` | Listar histórico | JWT |
 | GET | `/movimentacoes/buscar/<id>` | Consultar movimentação | JWT |
 | GET | `/movimentacoes/buscar/produto/<produto_id>` | Filtrar por produto | JWT |
@@ -310,22 +329,24 @@ Use datas no formato `AAAA-MM-DD`. As buscas de histórico por data inicial e fi
 | Edição de produto | `nome`, `quantidade_minima`, `unidade_medida`, `categoria_id` |
 | Movimentação | `tipo`, `quantidade`, `produto_id`; `observacao` opcional |
 
-As rotas PUT de perfil, produto e categoria exigem todos os campos listados para a operação. A edição de produto ignora um eventual campo `quantidade` enviado no JSON.
+As rotas PUT de perfil, produto e categoria exigem todos os campos listados para a operação. A edição de produto ignora um eventual campo `quantidade` enviado no JSON. Na atualização do perfil, o e-mail é normalizado (espaços removidos e letras minúsculas) e não pode pertencer a outro usuário.
 
 ### Recuperação de senha
 
-1. Envie `POST /auth/esqueci-senha` com o e-mail cadastrado.
-2. Copie o token recebido no corpo do e-mail. A implementação envia um código/token, não um link de redefinição.
-3. Envie `POST /auth/redefinir-senha` com `token` e `nova_senha`.
+1. Em `esqueci-senha.html` (ou `POST /auth/esqueci-senha`), informe o e-mail cadastrado.
+2. Copie o código recebido no corpo do e-mail. A implementação envia um código/token, não um link de redefinição.
+3. Em `redefinir-senha.html` (ou `POST /auth/redefinir-senha`), informe o código e a nova senha.
 4. Faça login com a nova senha para obter um JWT.
 
-O token de recuperação expira em 15 minutos e fica inválido após uma alteração bem-sucedida da senha. A nova senha deve ter pelo menos 8 caracteres e ser diferente da atual. A alteração autenticada também exige a senha atual e a confirmação da nova senha.
+O token de recuperação expira em 15 minutos e fica inválido após uma alteração bem-sucedida da senha. A nova senha deve ter pelo menos 8 caracteres e ser diferente da atual. A tela de redefinição pede a confirmação da senha, mas essa conferência é feita apenas no frontend: a rota não recebe esse campo. A alteração autenticada (`PUT /auth/alterar-senha`, usada em `configuracoes.html`) também exige a senha atual e a confirmação da nova senha.
 
-Respostas comuns: `200` para sucesso, `201` para criação, `400` para dados inválidos ou estoque insuficiente, `401` para credenciais inválidas/JWT ausente ou expirado, `404` para recurso ou resultado de busca ausente, `409` para conflitos e `503` para falha no envio de e-mail. Alguns erros de JWT são retornados como `422` pela extensão.
+No frontend, a alteração de senha chama a API com `tratarSessao: false`: uma senha atual incorreta pode retornar `401`, e isso não deve ser tratado como sessão expirada.
+
+Respostas comuns: `200` para sucesso, `201` para criação, `400` para dados inválidos ou estoque insuficiente, `401` para credenciais inválidas/JWT ausente ou expirado, `404` para recurso ou resultado de busca ausente, `409` para conflitos (como e-mail já cadastrado) e `503` para falha no envio de e-mail. Alguns erros de JWT são retornados como `422` pela extensão.
 
 ## Dashboard (tela inicial)
 
-A API já possui `GET /dashboard` no Blueprint `routes/dashboard.py`, registrado em `app.py`. A rota exige `Authorization: Bearer SEU_ACCESS_TOKEN`. A implementação lê os produtos cadastrados e devolve um JSON com três partes:
+A API possui `GET /dashboard` no Blueprint `routes/dashboard.py`, registrado em `app.py`. A rota exige `Authorization: Bearer SEU_ACCESS_TOKEN`. A implementação lê os produtos cadastrados e devolve um JSON com três partes:
 
 - `indicadores`: `total_produtos`, `estoque_ok`, `acabando`, `em_falta`.
 - `produtos_baixos`: produtos classificados como `acabando` ou `em_falta`, com ID, nome, quantidade, mínimo, unidade e status; itens em falta vêm primeiro.
@@ -341,29 +362,30 @@ Regras de classificação usadas no backend:
 
 Exemplo de teste no Postman: `GET http://127.0.0.1:5000/dashboard` com Bearer Token obtido em `/auth/login`. O resultado depende dos produtos efetivamente cadastrados no SQLite; não são números fixos.
 
-**Situação do frontend:** `front-end/pages/inicio.html` ainda exibe indicadores, barras e lista de estoque com exemplos estáticos. Ainda falta consumir `/dashboard` por JavaScript, preencher os elementos da página com o JSON retornado e configurar a autenticação para acesso pelo navegador. A página `redefinir-senha.html` também existe como arquivo HTML, mas não executa a recuperação pela API.
+**Situação do frontend:** `front-end/pages/inicio.html` consome `/dashboard` por JavaScript. O `indicadores.js` preenche os cartões de indicadores, o `produtos-baixos.js` monta a lista de itens acabando ou em falta, e o `dashboard.js` desenha com Chart.js o gráfico de barras de estoque atual e mínimo, com seletor de unidade de medida e botão de atualização. O menu lateral dessa página usa o mesmo mecanismo das demais (`carregarUsuarioMenu()` e botão Sair).
 
 ## Pendências identificadas no código atual
 
-1. **Integrar o frontend à API:** telas de cadastro, login, produtos, categorias, movimentações, configurações e recuperação de senha ainda não estão conectadas aos endpoints. A interface precisará de tratamento de autenticação, sessão e falhas HTTP.
-2. **Tornar o dashboard dinâmico:** substituir os números, alertas e barras fixos de `inicio.html` pelos campos retornados por `/dashboard`; atualizar os dados após operações de estoque.
-3. **Fortalecer consistência de estoque:** a saída verifica o saldo antes de atualizar, mas faltam testes de concorrência para requisições simultâneas e proteção contra saldos inconsistentes.
-4. **Planejar quantidades fracionárias:** `quantidade` e `quantidade_minima` estão em `Integer`, mesmo para kg e litros. Se o restaurante precisar de frações, avaliar `Numeric`/`Decimal` e migração do banco.
-5. **Segurança:** adicionar rate limiting para login/recuperação; estratégia para revogar JWTs após troca/reset de senha; política de permissões e desligar `debug=True` em produção. O JWT atual é válido por **120 minutos**, não pelos 1.200 minutos informados no `.env.example` (esse arquivo não foi alterado).
-6. **Testes finais:** verificar endpoints, recuperações, erros, permissões, classificações do dashboard e operações de estoque usando cenários válidos e inválidos.
+1. **Fortalecer consistência de estoque:** a saída verifica o saldo antes de atualizar, mas faltam testes de concorrência para requisições simultâneas e proteção contra saldos inconsistentes.
+2. **Segurança:** adicionar rate limiting para login/recuperação; estratégia para revogar JWTs após troca/reset de senha; política de permissões e desligar `debug=True` em produção. O JWT atual é válido por **120 minutos**, não pelos 1.200 minutos informados no `.env.example` (esse arquivo não foi alterado). O token no `sessionStorage` fica exposto a scripts da página, então o frontend deve evitar inserir conteúdo não confiável como HTML.
+3. **Testes automatizados:** os fluxos principais foram verificados manualmente; faltam testes automatizados de endpoints, permissões, classificações do dashboard e operações de estoque com cenários válidos e inválidos.
+4. **Migrações de banco:** adotar uma ferramenta de migração (por exemplo, Flask-Migrate) para evoluir o esquema sem recriar o banco.
+5. **Atualização automática do dashboard:** os dados são carregados ao abrir a tela e pelo botão de atualizar; ainda não são recarregados automaticamente após operações de estoque feitas em outras telas.
 
 ## Regras de estoque implementadas
 
 - Tipos aceitos: `entrada` e `saida`.
-- Quantidade de movimentação: inteiro maior que zero.
+- Quantidade de movimentação: valor maior que zero, seguindo as regras de casas decimais da unidade do produto.
 - A data da movimentação é preenchida automaticamente com a data local do servidor no momento da criação.
-- Saldo inicial e quantidade mínima do produto: inteiros maiores ou iguais a zero.
-- Unidades aceitas: `unidade`, `kg`, `g`, `l`, `ml`. Mesmo para peso e volume, os campos atuais aceitam somente inteiros.
+- Saldo inicial e quantidade mínima do produto: valores maiores ou iguais a zero.
+- Unidades aceitas: `unidade`, `kg`, `g`, `l`, `ml`. A unidade `unidade` aceita somente inteiros; as demais aceitam até 3 casas decimais.
+- Não é possível alterar a unidade de um produto para `unidade` enquanto o saldo atual tiver casas decimais.
 - Produto e categoria devem existir nas operações que os referenciam.
 - Uma saída individual é rejeitada quando excede o saldo consultado.
 - O ajuste do saldo e a inclusão da movimentação são confirmados pelo mesmo `commit`.
-- Categorias com produtos e produtos com movimentações não podem ser excluídos.
-- O saldo inicial informado no cadastro de produto não gera automaticamente uma movimentação. Para registrar a origem do estoque, cadastre com zero e faça uma entrada.
+- Categorias com produtos não podem ser excluídas.
+- A exclusão de um produto remove também o histórico de movimentações dele.
+- O saldo inicial informado no cadastro de produto não gera automaticamente uma movimentação. Para registrar a origem do estoque, cadastre com zero e faça uma entrada; a tela de produtos já cadastra sempre com saldo zero.
 
 ## Autores
 

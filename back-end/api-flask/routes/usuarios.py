@@ -28,6 +28,24 @@ def listar_usuarios():
 
     return jsonify(resultado), 200
 
+#BUSCAR USUARIO POR ID
+@usuarios_bp.route("/usuarios/buscar/<int:id>", methods=["GET"])
+@jwt_required()
+def buscar_usuario(id):
+
+    usuario = db.session.execute(
+        db.select(Usuario).filter_by(id=id)
+    ).scalar_one_or_none()
+
+    if not usuario:
+        return jsonify({"erro": "Usuário não encontrado"}), 404
+
+    return jsonify({
+        "id": usuario.id,
+        "nome": usuario.nome,
+        "email": usuario.email
+    }), 200
+
 #CADASTRAR USUARIO
 @usuarios_bp.route("/usuarios/cadastrar", methods=["POST"])
 def cadastrar_usuario():
@@ -91,11 +109,9 @@ def cadastrar_usuario():
 @usuarios_bp.route("/usuarios/atualizar", methods=["PUT"])
 @jwt_required()
 def atualizar_usuario():
-    
-    # Obtém o ID do usuário autenticado
+
     usuario_id = int(get_jwt_identity())
 
-    # Obtém os dados enviados pelo Postman
     dados = request.get_json(silent=True)
 
     if not isinstance(dados, dict):
@@ -104,9 +120,11 @@ def atualizar_usuario():
     nome = dados.get("nome")
     email = dados.get("email")
 
-    # Verifica se os dados foram informados
     if not isinstance(nome, str) or not isinstance(email, str):
         return jsonify({"erro": "Informe o nome e o email"}), 400
+
+    nome = nome.strip()
+    email = email.strip().lower()
 
     if not nome or not email:
         return jsonify({"erro": "Informe o nome e o email"}), 400
@@ -117,16 +135,29 @@ def atualizar_usuario():
     if email.count("@") != 1 or "." not in email.split("@")[1]:
         return jsonify({"erro": "E-mail inválido"}), 400
 
-    # Busca o usuário utilizando ORM
     usuario = db.session.execute(
         db.select(Usuario).filter_by(id=usuario_id)
     ).scalar_one_or_none()
 
-    usuario.nome = nome.strip()
-    usuario.email = email.strip().lower()
+    if not usuario:
+        return jsonify({"erro": "Usuário não encontrado"}), 404
 
-    # Salva no banco
-    db.session.commit()
+    # Impede usar o e-mail de outro usuário.
+    email_em_uso = db.session.execute(
+        db.select(Usuario).filter(Usuario.email == email, Usuario.id != usuario_id)
+    ).scalar_one_or_none()
+
+    if email_em_uso:
+        return jsonify({"erro": "E-mail já cadastrado"}), 409
+
+    usuario.nome = nome
+    usuario.email = email
+
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"erro": "E-mail já cadastrado"}), 409
 
     return jsonify({
         "mensagem": "Informações atualizadas com sucesso"
